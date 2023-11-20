@@ -1,0 +1,17 @@
+.login-background{
+    flex: 4;
+    background-color: white;
+    color: var(--color-1);
+}
+.brand-info{
+    flex: 6;
+}
+
+.brand-logo, .warning-message{
+    flex: 1
+}
+
+.login-element{
+    flex: 5;
+}
+
