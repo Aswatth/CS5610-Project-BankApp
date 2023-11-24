@@ -1,0 +1,7 @@
+.schedule-steps{
+    flex: 1;
+    background-color: white;
+}
+.schedule-step-content{
+    flex: 2
+}
