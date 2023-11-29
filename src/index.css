@@ -5,9 +5,43 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background-color: var(--color-1);
 }
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+:root{
+  --color-1: rgb(23,27,38,1);
+  --color-2: rgb(28, 54, 89,1);
+  --color-3: rgb(7, 152, 242,1);
+  --color-4: rgb(242, 200, 121,1);
+  --color-5: rgb(217, 196, 156,1);
+}
+
+.color-1 {
+  background-color: var(--color-1)
+}
+
+.color-2 {
+  background-color: var(--color-2);
+}
+
+.color-3 {
+  background-color: var(--color-3)
+}
+
+.color-4 {
+  background-color: var(--color-4)
+}
+
+.color-5 {
+  background-color: var(--color-5)
+}
+
+.color-1, .color-2, .color-3, .color-4, .color-5 {
+  color: white;
+}
+
