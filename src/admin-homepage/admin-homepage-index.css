@@ -1,0 +1,12 @@
+.side-panel {
+    flex: 1;
+}
+.content {
+    flex: 4
+}
+ul{
+    padding-left: 0px;
+}
+.active-content{
+    background-color: var(--color-4);
+}
