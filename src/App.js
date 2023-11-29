@@ -4,24 +4,30 @@ import "primeicons/primeicons.css";
 
 import "./App.css";
 import Login from "./login/login-index";
-import { HashRouter } from "react-router-dom";
 import { Routes, Route, Navigate } from "react-router";
 import ScheduleAppointment from "./schedule-appointment/schedule-appointment-index";
+import AdminHomePage from "./admin-homepage/admin-homepage-index";
+import { Provider } from "react-redux";
+import store from "./store/index";
+import { HashRouter } from "react-router-dom";
 
 function App() {
   return (
-    <HashRouter>
-      <div>
-        <Routes>
-          <Route path="/" element={<Navigate to="/login" />} />
-          <Route path="/login" element={<Login />}></Route>
-          <Route
-            path="/book-appointment"
-            element={<ScheduleAppointment />}
-          ></Route>
-        </Routes>
-      </div>
-    </HashRouter>
+    <Provider store={store}>
+      <HashRouter>
+        <div>
+          <Routes>
+            <Route path="/" element={<Navigate to="/login" />} />
+            <Route path="/login" element={<Login />}></Route>
+            <Route
+              path="/book-appointment"
+              element={<ScheduleAppointment />}
+            ></Route>
+            <Route path="/admin-homepage" element={<AdminHomePage />}></Route>
+          </Routes>
+        </div>
+      </HashRouter>
+    </Provider>
   );
 }
 
