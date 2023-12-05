@@ -1,0 +1,71 @@
+:root{
+    --platinum-card-front: repeating-linear-gradient(45deg, transparent, grey 10%, transparent 20%);
+    --platinum-card-text: black;
+    --platinum-card-back: repeating-linear-gradient(45deg, white, grey 10%, white 20%);
+
+    --gold-card-front: repeating-linear-gradient(45deg, red, yellow 10%, green 20%);
+    --gold-card-back: linear-gradient(to right, red, green);
+
+    --silver-card-front: linear-gradient(to right, grey, white, grey);
+    --silver-card-text: black;
+    --silver-card-back: linear-gradient(to right, grey, white, grey);
+
+    --bronze-card-front : repeating-linear-gradient(45deg, var(--color-1), var(--color-2) 10%, var(--color-3) 20%);
+    --bronze-card-text: white;
+    --bronze-card-back: linear-gradient(to right, var(--color-3), var(--color-1), var(--color-3));
+}
+
+.customer-card-chip{
+    background-image: linear-gradient(to right, yellow, rgb(255,255,74)); 
+    width: 50px;
+    height: 35px;
+}
+
+.customer-card-container {
+    background-color: transparent;
+    perspective: 1000px;
+  }
+  
+  .customer-card {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    /* text-align: center; */
+    transition: transform 0.6s;
+    transform-style: preserve-3d;
+    /* box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2); */
+  }
+  
+  .customer-card:hover {
+    transform: rotateY(180deg);
+  }
+  
+  .customer-card-front, .customer-card-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    border-radius: 10px;
+  }
+
+  .customer-card-front {
+    /* background-image: repeating-linear-gradient(45deg, var(--color-1), var(--color-2) 10%, var(--color-3) 20%); */
+    /* background-image: var(--platinum-card); */
+    color: white;
+   }
+  
+  .customer-card-back {
+    color: white;
+    transform: rotateY(180deg);
+  }
+
+  .customer-card-back-label {
+    background-image:  repeating-linear-gradient(
+        45deg,
+        transparent,
+        transparent 10px,
+        #ccc 10px,
+        #ccc 20px
+      );
+  }
