@@ -10,7 +10,7 @@ import AdminHomePage from "./admin-homepage/admin-homepage-index";
 import { Provider } from "react-redux";
 import store from "./store/index";
 import { HashRouter } from "react-router-dom";
-import CustomerHomePage from "./customer-homepage/customer-homepage-index";
+import CustomerPage from "./customer/customer-index";
 
 function App() {
   return (
@@ -25,10 +25,7 @@ function App() {
               element={<ScheduleAppointment />}
             ></Route>
             <Route path="/admin-homepage" element={<AdminHomePage />}></Route>
-            <Route
-              path="/customer-homepage"
-              element={<CustomerHomePage />}
-            ></Route>
+            <Route path="/customer/*" element={<CustomerPage />}></Route>
           </Routes>
         </div>
       </HashRouter>
