@@ -11,6 +11,7 @@ import { Provider } from "react-redux";
 import store from "./store/index";
 import { HashRouter } from "react-router-dom";
 import CustomerPage from "./customer/customer-index";
+import Employee from "./employee/employee.index";
 
 function App() {
   return (
@@ -26,6 +27,18 @@ function App() {
             ></Route>
             <Route path="/admin-homepage" element={<AdminHomePage />}></Route>
             <Route path="/customer/*" element={<CustomerPage />}></Route>
+            <Route
+              path="/employee/*"
+              element={
+                <Employee
+                  employeeAccess={{
+                    viewCustomerAccess: true,
+                    approveCardRequests: true,
+                    createCustomer: true,
+                  }}
+                />
+              }
+            ></Route>
           </Routes>
         </div>
       </HashRouter>
