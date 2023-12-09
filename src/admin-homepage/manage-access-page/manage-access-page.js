@@ -3,8 +3,8 @@ import { Card } from "primereact/card";
 import { Column } from "primereact/column";
 import { DataTable } from "primereact/datatable";
 import { useEffect, useState } from "react";
-import * as client from "../client";
-import * as employeeReducer from "../employee-reducer";
+import * as client from "../../clients/admin-client";
+import * as employeeReducer from "../../reducers/employee-reducer";
 import { useDispatch, useSelector } from "react-redux";
 
 export default function AdminAccessPage() {
@@ -35,24 +35,38 @@ export default function AdminAccessPage() {
     if (
       isEditing &&
       selectedEmployee &&
-      selectedEmployee.employeeId == row.employeeId
+      selectedEmployee.employeeID == row.employeeID
     ) {
+      let access = false;
+      if (selectedEmployee.accessList.length != 0) {
+        access = selectedEmployee.accessList.find(
+          (f) => f.accessName == "view_customer_details"
+        );
+        access = access ? access.accessGiven : false;
+      }
       return (
         <div>
           <input
             type="checkbox"
-            checked={selectedEmployee.viewCustomer}
+            checked={access}
             onChange={(e) => {
               updateSelectedEmployee({
                 ...selectedEmployee,
-                viewCustomer: e.target.checked,
+                view_customer_details: e.target.checked,
               });
             }}
           ></input>
         </div>
       );
     } else {
-      return accessTemplate(row.viewCustomer);
+      if (row.accessList.length == 0) {
+        return accessTemplate(false);
+      } else {
+        let access = row.accessList.find(
+          (f) => f.accessName == "view_customer_details"
+        );
+        return accessTemplate(access ? access.accessGiven : false);
+      }
     }
   };
 
@@ -60,24 +74,38 @@ export default function AdminAccessPage() {
     if (
       isEditing &&
       selectedEmployee &&
-      selectedEmployee.employeeId == row.employeeId
+      selectedEmployee.employeeID == row.employeeID
     ) {
+      let access = false;
+      if (selectedEmployee.accessList.length != 0) {
+        access = selectedEmployee.accessList.find(
+          (f) => f.accessName == "view_customer_transactions"
+        ).accessGiven;
+        access = access ? access.accessGiven : false;
+      }
       return (
         <div>
           <input
             type="checkbox"
-            checked={selectedEmployee.viewCustomerTransactions}
+            checked={access}
             onChange={(e) => {
               updateSelectedEmployee({
                 ...selectedEmployee,
-                viewCustomerTransactions: e.target.checked,
+                view_customer_transactions: e.target.checked,
               });
             }}
           ></input>
         </div>
       );
     } else {
-      return accessTemplate(row.viewCustomerTransactions);
+      if (row.accessList.length == 0) {
+        return accessTemplate(false);
+      } else {
+        let access = row.accessList.find(
+          (f) => f.accessName == "view_customer_transactions"
+        );
+        return accessTemplate(access ? access.accessGiven : false);
+      }
     }
   };
 
@@ -85,24 +113,38 @@ export default function AdminAccessPage() {
     if (
       isEditing &&
       selectedEmployee &&
-      selectedEmployee.employeeId == row.employeeId
+      selectedEmployee.employeeID == row.employeeID
     ) {
+      let access = false;
+      if (selectedEmployee.accessList.length != 0) {
+        access = selectedEmployee.accessList.find(
+          (f) => f.accessName == "create_customer"
+        );
+        access = access ? access.accessGiven : false;
+      }
       return (
         <div>
           <input
             type="checkbox"
-            checked={selectedEmployee.createCustomer}
+            checked={access}
             onChange={(e) => {
               updateSelectedEmployee({
                 ...selectedEmployee,
-                createCustomer: e.target.checked,
+                create_customer: e.target.checked,
               });
             }}
           ></input>
         </div>
       );
     } else {
-      return accessTemplate(row.createCustomer);
+      if (row.accessList.length == 0) {
+        return accessTemplate(false);
+      } else {
+        let access = row.accessList.find(
+          (f) => f.accessName == "create_customer"
+        );
+        return accessTemplate(access ? access.accessGiven : false);
+      }
     }
   };
 
@@ -110,24 +152,36 @@ export default function AdminAccessPage() {
     if (
       isEditing &&
       selectedEmployee &&
-      selectedEmployee.employeeId == row.employeeId
+      selectedEmployee.employeeID == row.employeeID
     ) {
+      let access = false;
+      if (selectedEmployee.accessList.length != 0) {
+        access = selectedEmployee.accessList.find(
+          (f) => f.accessName == "approve_card"
+        );
+        access = access ? access.accessGiven : false;
+      }
       return (
         <div>
           <input
             type="checkbox"
-            checked={selectedEmployee.approveCardRequests}
+            checked={access}
             onChange={(e) => {
               updateSelectedEmployee({
                 ...selectedEmployee,
-                approveCardRequests: e.target.checked,
+                approve_card: e.target.checked,
               });
             }}
           ></input>
         </div>
       );
     } else {
-      return accessTemplate(row.approveCardRequests);
+      if (row.accessList.length == 0) {
+        return accessTemplate(false);
+      } else {
+        let access = row.accessList.find((f) => f.accessName == "approve_card");
+        return accessTemplate(access ? access.accessGiven : false);
+      }
     }
   };
 
@@ -155,31 +209,31 @@ export default function AdminAccessPage() {
         onSelectionChange={(e) => updateSelectedEmployee(e.value)}
       >
         {/* <Column selectionMode="single" headerStyle={{ width: "3rem" }}></Column> */}
-        <Column field="employeeId" header="Employee Id"></Column>
-        <Column field="firstname" header="First Name"></Column>
-        <Column field="lastname" header="Last Name"></Column>
+        <Column field="employeeID" header="Employee Id"></Column>
+        <Column field="firstName" header="First Name"></Column>
+        <Column field="lastName" header="Last Name"></Column>
         <Column field="branch" header="Branch"></Column>
         <Column field="role" header="Role"></Column>
-        <Column field="emailId" header="Email Id" />
+        <Column field="email" header="Email Id" />
         <Column
           field="viewCustomer"
           header="View Customer"
-          body={(rowData) => viewCustomerAccessTemplate(rowData)}
+          body={viewCustomerAccessTemplate}
         ></Column>
         <Column
           field="viewCustomerTransactions"
           header="View Customer Transactions"
-          body={(rowData) => viewCustomerTransactionsAccessTemplate(rowData)}
+          body={viewCustomerTransactionsAccessTemplate}
         ></Column>
         <Column
           field="createCustomer"
           header="Create Customer"
-          body={(rowData) => createCustomerAccessTemplate(rowData)}
+          body={createCustomerAccessTemplate}
         ></Column>
         <Column
           field="approveCardRequests"
           header="Approve Card Requests"
-          body={(rowData) => approveCardRequestsAccessTemplate(rowData)}
+          body={approveCardRequestsAccessTemplate}
         ></Column>
         <Column
           field=""
@@ -187,7 +241,7 @@ export default function AdminAccessPage() {
           body={(rowData) => {
             if (
               selectedEmployee &&
-              selectedEmployee.employeeId == rowData.employeeId
+              selectedEmployee.employeeID == rowData.employeeID
             ) {
               return (
                 <Button

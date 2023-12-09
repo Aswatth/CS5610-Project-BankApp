@@ -5,16 +5,17 @@ import { useRef, useState } from "react";
 import { Column } from "primereact/column";
 import { DataTable } from "primereact/datatable";
 
-import * as client from "../../client";
-import * as employeeReducer from "../../employee-reducer";
+import * as client from "../../../clients/admin-client";
+import * as employeeReducer from "../../../reducers/employee-reducer";
 import { Button } from "primereact/button";
 import { Toast } from "primereact/toast";
 import { useDispatch } from "react-redux";
+import employeeAccessReducer from "../../../reducers/employee-access-reducer";
 
 export default function AddEmployee() {
   const dispatch = useDispatch();
 
-  const roles = ["Employee", "Manager"];
+  const roles = ["employee", "Manager"];
   const [selectedRole, upadateSelectedRole] = useState(null);
 
   const branches = ["A1", "A2", "A3"];
@@ -52,7 +53,7 @@ export default function AddEmployee() {
         id="emailId"
         placeholder="Email Id"
         onChange={(e) => {
-          dispatch(employeeReducer.setEmailId(e.target.value));
+          dispatch(employeeReducer.setEmail(e.target.value));
         }}
       />
       <label htmlFor="role">Role</label>
@@ -79,7 +80,7 @@ export default function AddEmployee() {
         mask="(999) 999-9999"
         placeholder="(999) 999-9999"
         onChange={(e) => {
-          dispatch(employeeReducer.setMobileNumber(e.target.value));
+          dispatch(employeeReducer.setPhone(e.target.value));
         }}
       ></InputMask>
       <label htmlFor="access">Access:</label>
@@ -96,7 +97,9 @@ export default function AddEmployee() {
                   // checked={data}
                   onChange={(e) =>
                     dispatch(
-                      employeeReducer.setViewCustomerAccess(e.target.value)
+                      employeeAccessReducer.setViewCustomerAccess(
+                        e.target.checked
+                      )
                     )
                   }
                 />
@@ -115,8 +118,8 @@ export default function AddEmployee() {
                   // checked={data}
                   onChange={(e) =>
                     dispatch(
-                      employeeReducer.setViewCustomerTransactionAccess(
-                        e.target.value
+                      employeeAccessReducer.setViewCustomerTransactionAccess(
+                        e.target.checked
                       )
                     )
                   }
@@ -136,7 +139,9 @@ export default function AddEmployee() {
                   // checked={data}
                   onChange={(e) =>
                     dispatch(
-                      employeeReducer.setCreateCustomerAccess(e.target.value)
+                      employeeAccessReducer.setCreateCustomerAccess(
+                        e.target.checked
+                      )
                     )
                   }
                 />
@@ -155,7 +160,9 @@ export default function AddEmployee() {
                   // checked={data}
                   onChange={(e) =>
                     dispatch(
-                      employeeReducer.setApproveCardAccess(e.target.value)
+                      employeeAccessReducer.setApproveCardAccess(
+                        e.target.checked
+                      )
                     )
                   }
                 />

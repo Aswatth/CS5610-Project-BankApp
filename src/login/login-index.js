@@ -1,13 +1,24 @@
 import React, { useState } from "react";
 import logo from "../logo.svg";
-import { Card } from "primereact/card";
 import { InputText } from "primereact/inputtext";
-import { Button } from "primereact";
+import { Button } from "primereact/button";
 import "./login-index.css";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import * as client from "../clients/admin-client";
 
 export default function Login() {
-  const [value, setValue] = useState("");
+  const navigate = useNavigate();
+  const [credential, setCredential] = useState({ username: "", password: "" });
+
+  const handleLogin = () => {
+    console.log(credential);
+    client.login(credential).then((status) => {
+      if (status == 200) {
+        navigate("/admin/home");
+      }
+    });
+  };
+
   return (
     <div className="p-2 color-1 vh-100 d-flex justify-content-center">
       <div className="login-background d-flex flex-column border rounded">
@@ -20,15 +31,20 @@ export default function Login() {
             <label htmlFor="username">Username</label>
             <InputText
               id="username"
-              value={value}
-              onChange={(e) => setValue(e.target.value)}
+              value={credential.username}
+              onChange={(e) =>
+                setCredential({ ...credential, username: e.target.value })
+              }
               className="mb-3"
             />
             <label htmlFor="password">Password</label>
             <InputText
               id="password"
-              value={value}
-              onChange={(e) => setValue(e.target.value)}
+              type="password"
+              value={credential.password}
+              onChange={(e) =>
+                setCredential({ ...credential, password: e.target.value })
+              }
               className="mb-3"
             />
             <div className="d-flex flex-row">
@@ -41,6 +57,7 @@ export default function Login() {
               <Button
                 label="Login"
                 className="border rounded color-1 mb-3 flex-fill"
+                onClick={handleLogin}
               ></Button>
             </div>
           </div>

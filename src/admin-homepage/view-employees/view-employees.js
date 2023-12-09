@@ -1,15 +1,15 @@
 import { Column } from "primereact/column";
 import { DataTable } from "primereact/datatable";
 import { useEffect, useState } from "react";
-import * as client from "../client";
-import * as employeeReducer from "../employee-reducer";
+import * as client from "../../clients/admin-client";
+import * as employeeReducer from "../../reducers/employee-reducer";
 import { Dropdown } from "primereact/dropdown";
 import { Button } from "primereact/button";
 import { useDispatch, useSelector } from "react-redux";
 import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
 import { InputText } from "primereact/inputtext";
 
-export default function EmployeeData() {
+export default function ViewEmployees() {
   const dispatch = useDispatch();
   const employees = useSelector((state) => state.employeeReducer.employees);
   const [selectedEmployee, updateSelectedEmployee] = useState();
@@ -24,21 +24,21 @@ export default function EmployeeData() {
     } catch (error) {
       console.log(error);
     }
-  });
+  }, []);
 
   const showSelectedEmployeeOptions = (rowData) => {
     if (
       selectedEmployee &&
-      rowData.employeeId === selectedEmployee.employeeId
+      rowData.employeeID === selectedEmployee.employeeID
     ) {
       return (
         <div className="d-flex">
-          <Button
+          {/* <Button
             icon="pi pi-pencil"
             severity="warning"
             className="border rounded"
             // onClick={(e) => handleEmployeeDelete()}
-          ></Button>
+          ></Button> */}
           <Button
             icon="pi pi-trash"
             severity="danger"
@@ -52,6 +52,7 @@ export default function EmployeeData() {
   };
 
   const textEditor = (options) => {
+    console.log(options.value);
     return (
       <InputText
         type="text"
@@ -64,9 +65,10 @@ export default function EmployeeData() {
   const onRowEditComplete = (e) => {
     dispatch(client.updateEmployee(e));
   };
+
   const handleEmployeeDelete = () => {
     confirmDialog({
-      message: `Do you want to delete this employee: ${selectedEmployee.employeeId}?`,
+      message: `Do you want to delete this employee id: ${selectedEmployee.employeeID}?`,
       header: "Delete Confirmation",
       icon: "pi pi-info-circle",
       acceptClassName: "p-button-danger",
@@ -96,6 +98,9 @@ export default function EmployeeData() {
   return (
     <div>
       <div>
+        {/* {employees.map((m) => {
+          return <InputText value={m.firstName} />;
+        })} */}
         <ConfirmDialog />
         <DataTable
           value={employees}
@@ -109,7 +114,6 @@ export default function EmployeeData() {
           scrollable
           scrollHeight="500px"
           selectionMode="radiobutton"
-          // dataKey="id"
           selection={selectedEmployee}
           onSelectionChange={(e) => updateSelectedEmployee(e.value)}
         >
@@ -117,18 +121,32 @@ export default function EmployeeData() {
             selectionMode="single"
             headerStyle={{ width: "3rem" }}
           ></Column>
-          <Column field="employeeId" filter header="Employee Id"></Column>
+          <Column field="employeeID" filter header="Employee Id"></Column>
           <Column
-            field="firstname"
+            field="firstName"
             editor={(options) => {
               textEditor(options);
             }}
             filter
             header="First Name"
           ></Column>
-          <Column field="lastname" filter header="Last Name"></Column>
-          <Column field="mobileNumber" filter header="Phone"></Column>
-          <Column field="emailId" filter header="Email Id" />
+          <Column
+            field="lastName"
+            editor={(options) => {
+              textEditor(options);
+            }}
+            filter
+            header="Last Name"
+          ></Column>
+          <Column
+            field="phone"
+            editor={(options) => {
+              textEditor(options);
+            }}
+            filter
+            header="Phone"
+          ></Column>
+          <Column field="email" filter header="Email Id" />
           <Column
             field="branch"
             filter

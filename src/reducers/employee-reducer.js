@@ -1,20 +1,14 @@
 import { createSlice } from "@reduxjs/toolkit";
-import * as client from "./client";
 
 const initialState = {
   employees: [],
   employee: {
-    firstname: "",
-    lastname: "",
+    firstName: "",
+    lastName: "",
     role: "",
     branch: "",
-    emailId: "",
-    mobileNumber: "",
-    employeeId: "",
-    viewCustomer: false,
-    viewCustomerTransactions: false,
-    createCustomer: false,
-    approveCardRequests: false,
+    email: "",
+    phone: "",
   },
 };
 
@@ -25,61 +19,35 @@ const employeeSlice = createSlice({
     setFirstName: (state, action) => {
       state.employee = {
         ...state.employee,
-        firstname: action.payload,
+        firstName: action.payload,
       };
-      console.log(state.employee);
+      // console.log(state.employee);
     },
     setLastName: (state, action) => {
       state.employee = {
         ...state.employee,
-        lastname: action.payload,
+        lastName: action.payload,
       };
-      console.log(state.employee);
+      // console.log(state.employee);
     },
-    setEmailId: (state, action) => {
-      state.employee = { ...state.employee, emailId: action.payload };
-      console.log(state.employee);
+    setEmail: (state, action) => {
+      state.employee = { ...state.employee, email: action.payload };
+      // console.log(state.employee);
     },
-    setMobileNumber: (state, action) => {
+    setPhone: (state, action) => {
       state.employee = {
         ...state.employee,
-        mobilenumber: action.payload,
+        phone: action.payload,
       };
-      console.log(state.employee);
+      // console.log(state.employee);
     },
     setRole: (state, action) => {
       state.employee = { ...state.employee, role: action.payload };
-      console.log(state.employee);
+      // console.log(state.employee);
     },
     setBranch: (state, action) => {
       state.employee = { ...state.employee, branch: action.payload };
-      console.log(state.employee);
-    },
-
-    //Access setting
-    setViewCustomerAccess: (state, action) => {
-      state.employee = {
-        ...state.employee,
-        viewCustomer: action.payload,
-      };
-    },
-    setViewCustomerTransactionAccess: (state, action) => {
-      state.employee = {
-        ...state.employee,
-        viewCustomerTransactions: action.payload,
-      };
-    },
-    setCreateCustomerAccess: (state, action) => {
-      state.employee = {
-        ...state.employee,
-        createCustomer: action.payload,
-      };
-    },
-    setApproveCardAccess: (state, action) => {
-      state.employee = {
-        ...state.employee,
-        approveCardRequests: action.payload,
-      };
+      // console.log(state.employee);
     },
 
     //CRUD operations
@@ -94,7 +62,7 @@ const employeeSlice = createSlice({
     },
     deleteEmployee: (state, action) => {
       state.employees = state.employees.filter(
-        (f) => f.employeeId !== action.payload.employeeId
+        (f) => f.employeeID !== action.payload.employeeID
       );
     },
     updateEmployee: (state, action) => {
@@ -109,8 +77,8 @@ const employeeSlice = createSlice({
 export const {
   setFirstName,
   setLastName,
-  setEmailId,
-  setMobileNumber,
+  setEmail,
+  setPhone,
   setRole,
   setBranch,
   setViewCustomerAccess,

@@ -6,7 +6,7 @@ import "./App.css";
 import Login from "./login/login-index";
 import { Routes, Route, Navigate } from "react-router";
 import ScheduleAppointment from "./schedule-appointment/schedule-appointment-index";
-import AdminHomePage from "./admin-homepage/admin-homepage-index";
+import AdminPage from "./admin-homepage/admin-index";
 import { Provider } from "react-redux";
 import store from "./store/index";
 import { HashRouter } from "react-router-dom";
@@ -25,7 +25,7 @@ function App() {
               path="/book-appointment"
               element={<ScheduleAppointment />}
             ></Route>
-            <Route path="/admin-homepage" element={<AdminHomePage />}></Route>
+            <Route path="/admin/*" element={<AdminPage />}></Route>
             <Route path="/customer/*" element={<CustomerPage />}></Route>
             <Route
               path="/employee/*"
