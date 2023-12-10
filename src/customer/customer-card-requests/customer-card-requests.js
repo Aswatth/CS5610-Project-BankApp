@@ -58,7 +58,7 @@ export default function CustomerCardRequests() {
           className="color-2 border rounded"
           onClick={() => {
             updateCardRequestVisibility(true);
-            console.log("Clikking");
+            // console.log("Clikking");
           }}
         ></Button>
         <Dialog
@@ -70,7 +70,6 @@ export default function CustomerCardRequests() {
         >
           <CustomerNewCardRequest />
         </Dialog>
-        ;
       </div>
       <DataTable value={cardRequests}>
         <Column field="cardName" header="Card name"></Column>

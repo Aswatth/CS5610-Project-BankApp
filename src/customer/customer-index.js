@@ -68,6 +68,11 @@ export default function CustomerPage() {
       ),
     },
     {
+      name: "Appointments",
+      icon: "pi pi-calendar",
+      component: <Card className="flex-fill">View appointments</Card>,
+    },
+    {
       name: "Log out",
       icon: "pi pi-sign-out",
       component: <Card className="flex-fill">Logout</Card>,
