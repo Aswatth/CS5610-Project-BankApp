@@ -4,7 +4,10 @@ import { Column } from "primereact/column";
 import { DataTable } from "primereact/datatable";
 import { InputText } from "primereact/inputtext";
 import { Tag } from "primereact/tag";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+
+import * as mapClient from "../../clients/map-client";
+import Map from "./map-index";
 
 export default function PickLocation() {
   const locations = [
@@ -41,10 +44,20 @@ export default function PickLocation() {
   ];
 
   const [selectedLocation, updateSelectedLocation] = useState();
-  const [value, setValue] = useState("");
+  const [currentLocation, setCurrentLocation] = useState("");
+
+  const [latitude, setLatitude] = useState();
+  const [longitude, setLongitude] = useState();
+
+  useEffect(() => {
+    navigator.geolocation.getCurrentPosition((position) => {
+      //if permission granted
+      setLatitude(position.coords.latitude);
+      setLongitude(position.coords.longitude);
+    });
+  });
 
   const selectTemplate = (rowData) => {
-    console.log(JSON.stringify(selectedLocation));
     if (selectedLocation && rowData.location === selectedLocation.location) {
       return <Tag value="Selected" severity="success"></Tag>;
     }
@@ -59,6 +72,15 @@ export default function PickLocation() {
     }
   };
 
+  const searchNearestBranches = () => {
+    // console.log(currentLocation);
+    // console.log("Nearest branches");
+    mapClient.LocationToCoord(currentLocation).then((data) => {
+      setLatitude(data.lat);
+      setLongitude(data.lon);
+    });
+  };
+
   return (
     <div className="d-flex">
       <div className="flex-fill">
@@ -67,12 +89,16 @@ export default function PickLocation() {
             Enter ZIP code or city and state:
           </label>
           <InputText
-            value={value}
-            onChange={(e) => setValue(e.target.value)}
+            value={currentLocation}
+            onChange={(e) => setCurrentLocation(e.target.value)}
             placeholder="Your location"
             id="current-location"
           />
-          <Button icon="pi pi-search" className="color-1 border" />
+          <Button
+            icon="pi pi-search"
+            className="color-1 border"
+            onClick={searchNearestBranches}
+          />
         </div>
         <DataTable
           value={locations}
@@ -88,7 +114,7 @@ export default function PickLocation() {
         </DataTable>
       </div>
       <div className="flex-fill d-flex justify-content-center align-items-center">
-        Map goes here
+        <Map lat={latitude} lon={longitude}></Map>
       </div>
     </div>
   );
