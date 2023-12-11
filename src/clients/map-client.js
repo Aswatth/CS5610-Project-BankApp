@@ -3,9 +3,6 @@ import axios from "axios";
 const MAP_API = process.env.REACT_APP_LOCATION_IQ_API;
 const MAP_API_KEY = process.env.REACT_APP_LOCATION_IQ_API_KEY;
 
-console.log(MAP_API);
-console.log(MAP_API_KEY);
-
 export const CoordToLocation = async ({ lat, lon }) => {
   const response = await axios.get(
     `${MAP_API}/reverse?key=${MAP_API_KEY}&lat=${lat}&lon=${lon}&format=json`

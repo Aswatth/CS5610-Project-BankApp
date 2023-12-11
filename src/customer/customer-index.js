@@ -13,6 +13,7 @@ import { Button } from "primereact/button";
 import CustomerTransactions from "./customer-transactions/customer-transactions-index";
 import CustomerCardRequests from "./customer-card-requests/customer-card-requests";
 import CustomerSendMoney from "./customer-send-money/customer-send-money";
+import CustomerAppoointments from "./customer-appointments/customer-appointments";
 
 export default function CustomerPage() {
   const navigate = useNavigate();
@@ -70,7 +71,11 @@ export default function CustomerPage() {
     {
       name: "Appointments",
       icon: "pi pi-calendar",
-      component: <Card className="flex-fill">View appointments</Card>,
+      component: (
+        <Card className="flex-fill">
+          <CustomerAppoointments />
+        </Card>
+      ),
     },
     {
       name: "Log out",

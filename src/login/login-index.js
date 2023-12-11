@@ -16,12 +16,14 @@ export default function Login() {
   const [newCustomerData, setNewCustomerData] = useState({});
 
   const handleLogin = () => {
-    // console.log(credential);
-    adminClient.login(credential).then((status) => {
-      if (status == 200) {
-        navigate("/admin/home");
-      }
-    });
+    // Admin
+    // adminClient.login(credential).then((status) => {
+    //   if (status == 200) {
+    //     navigate("/admin/home");
+    //   }
+    // });
+
+    handleCustomerLogin();
   };
 
   const handleCustomerLogin = () => {
