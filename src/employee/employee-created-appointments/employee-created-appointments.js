@@ -1,13 +1,12 @@
-import { Calendar } from "primereact/calendar";
-import { Column } from "primereact/column";
 import { DataTable } from "primereact/datatable";
-import * as employeeClient from "../../clients/employee-client";
 import { useEffect, useState } from "react";
+import * as employeeClient from "../../clients/employee-client";
+import { Column } from "primereact/column";
+import { Calendar } from "primereact/calendar";
 
-export default function PickDateTime() {
+export default function EmployeeCreatedAppointments() {
   const [date, setDate] = useState(new Date());
   const [availableAppointments, setAvailableAppointments] = useState([]);
-  const [selectedAppointment, setSelectedAppointment] = useState();
 
   useEffect(() => {
     getAppointments(date);
@@ -29,6 +28,8 @@ export default function PickDateTime() {
 
   return (
     <div>
+      <h3>Created appointments</h3>
+      <hr></hr>
       <div className="d-flex justify-content-between">
         <Calendar
           value={date}
@@ -40,14 +41,7 @@ export default function PickDateTime() {
           showWeek
           className="me-3"
         />
-        <DataTable
-          value={availableAppointments}
-          selectionMode="row"
-          selection={selectedAppointment}
-          onSelectionChange={(e) => setSelectedAppointment(e.value)}
-          dataKey="id"
-          className="flex-fill me-3"
-        >
+        <DataTable value={availableAppointments} className="flex-fill">
           <Column field="date" header="Date"></Column>
           <Column field="startTime" header="Start time"></Column>
           <Column field="endTime" header="End time"></Column>

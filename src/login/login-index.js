@@ -7,6 +7,8 @@ import { Link, useNavigate } from "react-router-dom";
 import * as adminClient from "../clients/admin-client";
 import * as customerClient from "../clients/customer-client";
 import { Dialog } from "primereact/dialog";
+import { jwtDecode } from "jwt-decode";
+import Cookies from "js-cookie";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -17,13 +19,30 @@ export default function Login() {
 
   const handleLogin = () => {
     // Admin
-    // adminClient.login(credential).then((status) => {
-    //   if (status == 200) {
-    //     navigate("/admin/home");
-    //   }
-    // });
+    adminClient.login(credential).then((response) => {
+      if (response.status == 200) {
+        const token = response.data.token;
 
-    handleCustomerLogin();
+        Cookies.set("bank-app-token", token);
+        console.log(Cookies.get("token"));
+
+        const decodedUser = jwtDecode(token)["user_type"];
+
+        switch (decodedUser) {
+          case "admin":
+            navigate("/admin/home");
+            break;
+          case "customer":
+            navigate("/customer/home");
+            break;
+          case "employee":
+            navigate("/employee/home");
+            break;
+        }
+      }
+    });
+
+    // handleCustomerLogin();
   };
 
   const handleCustomerLogin = () => {

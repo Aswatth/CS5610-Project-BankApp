@@ -11,6 +11,7 @@ import EmployeeViewAppointments from "./view-appointments/employee-view-appointm
 import { useEffect } from "react";
 import EmployeeViewCustomers from "./view-customers/employee-view-customers";
 import EmployeeCardRequests from "./employee-card-requests/employee-card-requests";
+import EmployeeCreatedAppointments from "./employee-created-appointments/employee-created-appointments";
 
 export default function Employee({ employeeAccess }) {
   const { pathname } = useLocation();
@@ -37,6 +38,15 @@ export default function Employee({ employeeAccess }) {
             <EmployeeViewAppointments
               hasCreateCusomterAccess={employeeAccess.createCustomer}
             />
+          </Card>
+        ),
+      },
+      {
+        name: "Created appointments",
+        icon: "pi pi-calendar",
+        component: (
+          <Card className="flex-fill">
+            <EmployeeCreatedAppointments />
           </Card>
         ),
       },

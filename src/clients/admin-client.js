@@ -1,20 +1,18 @@
 import axios from "axios";
+import Cookies from "js-cookie";
 import { useState } from "react";
 
 const API = process.env.REACT_APP_API;
 
-let token = "";
-
 export const login = async (credential) => {
   const response = await axios.post(API + "/login", credential);
-  token = response.data.token;
-  return response.status;
+  return response;
 };
 
 export const getEmployees = async () => {
   const response = await axios.get(API + "/employees", {
     headers: {
-      Authorization: `Bearer ${token}`,
+      Authorization: `Bearer ${Cookies.get("bank-app-token")}`,
     },
   });
   console.log(response.data);
@@ -34,7 +32,7 @@ export const addEmployee = async (employeeToAdd) => {
 
   const response = await axios.post(API + "/employees", employeeToAdd, {
     headers: {
-      Authorization: `Bearer ${token}`,
+      Authorization: `Bearer ${Cookies.get("bank-app-token")}`,
     },
   });
   return response.data;
@@ -45,7 +43,7 @@ export const deleteEmployee = async (employeeToDelete) => {
     API + "/employees/" + employeeToDelete.employeeID,
     {
       headers: {
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${Cookies.get("bank-app-token")}`,
       },
     }
   );
