@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import * as client from "../../clients/admin-client";
 import * as employeeReducer from "../../reducers/employee-reducer";
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router";
 
 export default function AdminAccessPage() {
   const dispatch = useDispatch();
@@ -13,10 +14,16 @@ export default function AdminAccessPage() {
   const [selectedEmployee, updateSelectedEmployee] = useState();
   const [isEditing, toggleEditing] = useState(false);
 
+  const navigate = useNavigate();
+
   useEffect(() => {
     try {
-      client.getEmployees().then((data) => {
-        dispatch(employeeReducer.setEmployees(data));
+      client.getEmployees().then((response) => {
+        if (response == null || response.status == 401) {
+          navigate("/login");
+          return;
+        }
+        dispatch(employeeReducer.setEmployees(response.data));
       });
     } catch (error) {
       console.log(error);

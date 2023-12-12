@@ -24,7 +24,6 @@ export default function Login() {
         const token = response.data.token;
 
         Cookies.set("bank-app-token", token);
-        console.log(Cookies.get("token"));
 
         const decodedUser = jwtDecode(token)["user_type"];
 

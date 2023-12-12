@@ -9,8 +9,10 @@ import {
   useNavigate,
 } from "react-router";
 import { Button } from "primereact/button";
-import employeeReducer from "../reducers/employee-reducer";
 import EmployeeIndex from "./view-employees/employee-data-index";
+import Cookies from "js-cookie";
+import { isAdmin } from "../clients/admin-client";
+import { useEffect } from "react";
 
 export default function AdminPage() {
   const options = [
@@ -33,33 +35,33 @@ export default function AdminPage() {
       ),
     },
     {
-      name: "View access requests",
-      icon: "pi pi-key",
-      component: <Card className="flex-fill">View requests</Card>,
-    },
-    {
-      name: "Update password",
-      icon: "pi pi-lock",
-      component: <Card>Update password</Card>,
+      name: "Log out",
+      icon: "pi pi-sign-out",
     },
   ];
 
   const navigate = useNavigate();
   const { pathname } = useLocation();
-  // console.log(pathname);
 
   const selectedOption = options.find((f) =>
     pathname.includes(f.name.toLowerCase().replace(" ", "-"))
   );
 
   const handleSidePanelClick = (option) => {
-    if (!pathname.includes("log-out")) {
-      if (selectedOption.name != option.name) {
+    if (selectedOption.name != option.name) {
+      if (isAdmin) {
         let formattedOptionName = option.name.toLowerCase().replace(" ", "-");
+        if (formattedOptionName == "log-out") {
+          Cookies.remove("bank-app-token");
+          navigate("/login");
+          return;
+        }
         navigate(`${formattedOptionName}`);
+        return;
+      } else {
+        navigate("/login");
+        return;
       }
-    } else {
-      navigate("/login");
     }
   };
   return (
