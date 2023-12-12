@@ -16,18 +16,18 @@ export default function AdminAccessPage() {
 
   const navigate = useNavigate();
 
+  function refresh() {
+    client.getEmployees().then((response) => {
+      if (response == null || response.status == 401) {
+        navigate("/login");
+        return;
+      }
+      dispatch(employeeReducer.setEmployees(response.data));
+    });
+  }
+
   useEffect(() => {
-    try {
-      client.getEmployees().then((response) => {
-        if (response == null || response.status == 401) {
-          navigate("/login");
-          return;
-        }
-        dispatch(employeeReducer.setEmployees(response.data));
-      });
-    } catch (error) {
-      console.log(error);
-    }
+    refresh();
   }, []);
 
   const accessTemplate = (value) => {
@@ -224,9 +224,7 @@ export default function AdminAccessPage() {
         )
         .then((response) => {
           if (response.status == 200) {
-            client.getEmployees().then((data) => {
-              dispatch(employeeReducer.setEmployees(data));
-            });
+            refresh();
           }
         });
     }

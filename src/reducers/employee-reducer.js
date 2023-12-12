@@ -9,6 +9,8 @@ const initialState = {
     branch: "",
     email: "",
     phone: "",
+    username: "",
+    password: "",
   },
 };
 
@@ -49,6 +51,14 @@ const employeeSlice = createSlice({
       state.employee = { ...state.employee, branch: action.payload };
       // console.log(state.employee);
     },
+    setUsername: (state, action) => {
+      state.employee = { ...state.employee, username: action.payload };
+      console.log(state.employee);
+    },
+    setPassword: (state, action) => {
+      state.employee = { ...state.employee, password: action.payload };
+      console.log(state.employee);
+    },
 
     //CRUD operations
     setEmployees: (state, action) => {
@@ -81,6 +91,8 @@ export const {
   setPhone,
   setRole,
   setBranch,
+  setUsername,
+  setPassword,
   setEmployees,
   setEmployee,
   addEmployee,

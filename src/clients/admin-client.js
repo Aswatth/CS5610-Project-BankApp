@@ -25,14 +25,9 @@ export const getEmployees = async () => {
 };
 
 export const addEmployee = async (employeeToAdd) => {
-  employeeToAdd = {
-    ...employeeToAdd,
-    username: `${employeeToAdd.firstName + employeeToAdd.lastName}`,
-    password: "123",
-  };
-
   let token = Cookies.get("bank-app-token");
 
+  console.log("To add: " + JSON.stringify(employeeToAdd));
   if (token) {
     const response = await axios.post(API + "/employees", employeeToAdd, {
       headers: {

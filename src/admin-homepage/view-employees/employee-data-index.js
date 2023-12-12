@@ -25,13 +25,16 @@ export default function EmployeeIndex() {
 
   const handleAddEmployee = () => {
     let employeeToAdd = { ...employee, accessList: accessList };
-    client.addEmployee(employeeToAdd).then((e) => {
-      client.getEmployees().then((data) => {
-        dispatch(employeeReducer.setEmployees(data));
-      });
-      dispatch(employeeReducer.setEmployee({}));
+    client.addEmployee(employeeToAdd).then((addResponse) => {
+      if (addResponse.status == 200 || addResponse.status == 201) {
+        client.getEmployees().then((response) => {
+          dispatch(employeeReducer.setEmployees(response.data));
+        });
+        dispatch(employeeReducer.setEmployee({}));
+
+        toggleAddEmployee(!isAddingEmployee);
+      }
     });
-    toggleAddEmployee(!isAddingEmployee);
   };
 
   const buttonsToDisplay = () => {

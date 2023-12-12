@@ -32,22 +32,29 @@ export default function AddEmployee() {
 
   return (
     <div className="d-flex flex-column">
-      <label htmlFor="firstname">First Name</label>
-      <InputText
-        id="firstname"
-        placeholder="First name"
-        onChange={(e) => {
-          dispatch(employeeReducer.setFirstName(e.target.value));
-        }}
-      />
-      <label htmlFor="lastname">Last Name</label>
-      <InputText
-        id="lastname"
-        placeholder="Last name"
-        onChange={(e) => {
-          dispatch(employeeReducer.setLastName(e.target.value));
-        }}
-      />
+      <div>
+        <label htmlFor="firstname" className="form-label">
+          Name
+        </label>
+        <div className="d-flex">
+          <InputText
+            id="firstname"
+            placeholder="First name"
+            className="flex-fill"
+            onChange={(e) => {
+              dispatch(employeeReducer.setFirstName(e.target.value));
+            }}
+          />
+          <InputText
+            id="lastname"
+            placeholder="Last name"
+            className="flex-fill"
+            onChange={(e) => {
+              dispatch(employeeReducer.setLastName(e.target.value));
+            }}
+          />
+        </div>
+      </div>
       <label htmlFor="emailId">Email Id</label>
       <InputText
         id="emailId"
@@ -83,6 +90,26 @@ export default function AddEmployee() {
           dispatch(employeeReducer.setPhone(e.target.value));
         }}
       ></InputMask>
+
+      <label htmlFor="username">Username</label>
+      <InputText
+        id="username"
+        placeholder="Username"
+        onChange={(e) => {
+          dispatch(employeeReducer.setUsername(e.target.value));
+        }}
+      />
+
+      <label htmlFor="password">Password</label>
+      <InputText
+        id="password"
+        type="password"
+        placeholder="Password"
+        onChange={(e) => {
+          dispatch(employeeReducer.setPassword(e.target.value));
+        }}
+      />
+
       <label htmlFor="access">Access:</label>
 
       <DataTable value={access}>
