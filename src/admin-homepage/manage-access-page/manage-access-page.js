@@ -11,7 +11,17 @@ export default function AdminAccessPage() {
   const dispatch = useDispatch();
   const employees = useSelector((state) => state.employeeReducer.employees);
   const [selectedEmployee, updateSelectedEmployee] = useState();
-  const [isEditing, updateEditing] = useState(false);
+  const [isEditing, toggleEditing] = useState(false);
+
+  useEffect(() => {
+    try {
+      client.getEmployees().then((data) => {
+        dispatch(employeeReducer.setEmployees(data));
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  }, []);
 
   const accessTemplate = (value) => {
     if (value == true) {
@@ -31,35 +41,39 @@ export default function AdminAccessPage() {
     }
   };
 
+  const updateAccess = (accessName, accessStatus) => {
+    const updatedAccess = selectedEmployee.accessList.map((item) =>
+      item.accessName == accessName
+        ? { ...item, accessGiven: accessStatus }
+        : item
+    );
+
+    // console.log({ ...selectedEmployee, accessList: updatedAccess });
+    updateSelectedEmployee({ ...selectedEmployee, accessList: updatedAccess });
+  };
+
   const viewCustomerAccessTemplate = (row) => {
     if (
       isEditing &&
       selectedEmployee &&
       selectedEmployee.employeeID == row.employeeID
     ) {
-      let access = false;
-      if (selectedEmployee.accessList.length != 0) {
-        access = selectedEmployee.accessList.find(
-          (f) => f.accessName == "view_customer_details"
-        );
-        access = access ? access.accessGiven : false;
-      }
+      let access = selectedEmployee.accessList.find(
+        (f) => f.accessName == "view_customer_details"
+      ).accessGiven;
       return (
         <div>
           <input
             type="checkbox"
             checked={access}
-            onChange={(e) => {
-              updateSelectedEmployee({
-                ...selectedEmployee,
-                view_customer_details: e.target.checked,
-              });
-            }}
+            onChange={(e) =>
+              updateAccess("view_customer_details", e.target.checked)
+            }
           ></input>
         </div>
       );
     } else {
-      if (row.accessList.length == 0) {
+      if (!row.accessList || row.accessList.length == 0) {
         return accessTemplate(false);
       } else {
         let access = row.accessList.find(
@@ -76,29 +90,22 @@ export default function AdminAccessPage() {
       selectedEmployee &&
       selectedEmployee.employeeID == row.employeeID
     ) {
-      let access = false;
-      if (selectedEmployee.accessList.length != 0) {
-        access = selectedEmployee.accessList.find(
-          (f) => f.accessName == "view_customer_transactions"
-        ).accessGiven;
-        access = access ? access.accessGiven : false;
-      }
+      let access = selectedEmployee.accessList.find(
+        (f) => f.accessName == "view_customer_transactions"
+      ).accessGiven;
       return (
         <div>
           <input
             type="checkbox"
             checked={access}
             onChange={(e) => {
-              updateSelectedEmployee({
-                ...selectedEmployee,
-                view_customer_transactions: e.target.checked,
-              });
+              updateAccess("view_customer_transactions", e.target.checked);
             }}
           ></input>
         </div>
       );
     } else {
-      if (row.accessList.length == 0) {
+      if (!row.accessList || row.accessList.length == 0) {
         return accessTemplate(false);
       } else {
         let access = row.accessList.find(
@@ -115,29 +122,22 @@ export default function AdminAccessPage() {
       selectedEmployee &&
       selectedEmployee.employeeID == row.employeeID
     ) {
-      let access = false;
-      if (selectedEmployee.accessList.length != 0) {
-        access = selectedEmployee.accessList.find(
-          (f) => f.accessName == "create_customer"
-        );
-        access = access ? access.accessGiven : false;
-      }
+      let access = selectedEmployee.accessList.find(
+        (f) => f.accessName == "create_customer"
+      ).accessGiven;
       return (
         <div>
           <input
             type="checkbox"
             checked={access}
             onChange={(e) => {
-              updateSelectedEmployee({
-                ...selectedEmployee,
-                create_customer: e.target.checked,
-              });
+              updateAccess("create_customer", e.target.checked);
             }}
           ></input>
         </div>
       );
     } else {
-      if (row.accessList.length == 0) {
+      if (!row.accessList || row.accessList.length == 0) {
         return accessTemplate(false);
       } else {
         let access = row.accessList.find(
@@ -154,29 +154,22 @@ export default function AdminAccessPage() {
       selectedEmployee &&
       selectedEmployee.employeeID == row.employeeID
     ) {
-      let access = false;
-      if (selectedEmployee.accessList.length != 0) {
-        access = selectedEmployee.accessList.find(
-          (f) => f.accessName == "approve_card"
-        );
-        access = access ? access.accessGiven : false;
-      }
+      let access = selectedEmployee.accessList.find(
+        (f) => f.accessName == "approve_card"
+      ).accessGiven;
       return (
         <div>
           <input
             type="checkbox"
             checked={access}
             onChange={(e) => {
-              updateSelectedEmployee({
-                ...selectedEmployee,
-                approve_card: e.target.checked,
-              });
+              updateAccess("approve_card", e.target.checked);
             }}
           ></input>
         </div>
       );
     } else {
-      if (row.accessList.length == 0) {
+      if (!row.accessList || row.accessList.length == 0) {
         return accessTemplate(false);
       } else {
         let access = row.accessList.find((f) => f.accessName == "approve_card");
@@ -185,14 +178,53 @@ export default function AdminAccessPage() {
     }
   };
 
-  const handleEdit = () => {
+  function employeeSelectTemplate() {
     if (isEditing) {
-      client.updateEmployee(selectedEmployee).then((status) => {
-        dispatch(employeeReducer.updateEmployee(selectedEmployee));
-      });
+      return (
+        <div className="d-flex">
+          <Button
+            icon="pi pi-check"
+            className="p-button-text"
+            style={{ color: "var(--color-3)" }}
+            onClick={confirmEdit}
+          />
+          <Button
+            icon="pi pi-times"
+            className="p-button-text"
+            style={{ color: "var(--color-3)" }}
+            onClick={() => toggleEditing(false)}
+          />
+        </div>
+      );
+    } else {
+      return (
+        <Button
+          icon="pi pi-pencil"
+          className="p-button-text"
+          style={{ color: "var(--color-3)" }}
+          onClick={() => toggleEditing(true)}
+        />
+      );
+    }
+  }
+
+  const confirmEdit = () => {
+    if (isEditing) {
+      client
+        .updateEmployeeAccess(
+          selectedEmployee.employeeID,
+          selectedEmployee.accessList
+        )
+        .then((response) => {
+          if (response.status == 200) {
+            client.getEmployees().then((data) => {
+              dispatch(employeeReducer.setEmployees(data));
+            });
+          }
+        });
     }
 
-    updateEditing(!isEditing);
+    toggleEditing(!isEditing);
   };
 
   return (
@@ -206,7 +238,9 @@ export default function AdminAccessPage() {
         selectionMode={isEditing ? "" : "single"}
         // dataKey="id"
         selection={selectedEmployee}
-        onSelectionChange={(e) => updateSelectedEmployee(e.value)}
+        onSelectionChange={(e) => {
+          updateSelectedEmployee(e.value);
+        }}
       >
         {/* <Column selectionMode="single" headerStyle={{ width: "3rem" }}></Column> */}
         <Column field="employeeID" header="Employee Id"></Column>
@@ -243,14 +277,7 @@ export default function AdminAccessPage() {
               selectedEmployee &&
               selectedEmployee.employeeID == rowData.employeeID
             ) {
-              return (
-                <Button
-                  icon={isEditing ? "pi pi-check" : "pi pi-pencil"}
-                  className="p-button-text"
-                  style={{ color: "var(--color-3)" }}
-                  onClick={handleEdit}
-                />
-              );
+              return employeeSelectTemplate();
             } else {
               return <div></div>;
             }

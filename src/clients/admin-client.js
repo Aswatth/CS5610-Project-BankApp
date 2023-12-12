@@ -15,20 +15,16 @@ export const getEmployees = async () => {
       Authorization: `Bearer ${Cookies.get("bank-app-token")}`,
     },
   });
-  console.log(response.data);
+  // console.log(response.data);
   return response.data;
 };
 
 export const addEmployee = async (employeeToAdd) => {
-  // delete employeeToAdd.accessList;
-
   employeeToAdd = {
     ...employeeToAdd,
     username: `${employeeToAdd.firstName + employeeToAdd.lastName}`,
     password: "123",
   };
-
-  console.log(employeeToAdd);
 
   const response = await axios.post(API + "/employees", employeeToAdd, {
     headers: {
@@ -36,6 +32,19 @@ export const addEmployee = async (employeeToAdd) => {
     },
   });
   return response.data;
+};
+
+export const updateEmployeeAccess = async (employeeId, accessToUpdate) => {
+  const response = await axios.put(
+    API + `/employees/${employeeId}/access`,
+    { accessList: [...accessToUpdate] },
+    {
+      headers: {
+        Authorization: `Bearer ${Cookies.get("bank-app-token")}`,
+      },
+    }
+  );
+  return response;
 };
 
 export const deleteEmployee = async (employeeToDelete) => {

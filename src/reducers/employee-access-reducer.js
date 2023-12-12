@@ -2,7 +2,12 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   employeeID: "",
-  accessList: [],
+  accessList: [
+    { accessName: "view_customer_details", accessGiven: false },
+    { accessName: "view_customer_transactions", accessGiven: false },
+    { accessName: "create_customer", accessGiven: false },
+    { accessName: "approve_card", accessGiven: false },
+  ],
 };
 
 const accessSlice = createSlice({
@@ -17,57 +22,25 @@ const accessSlice = createSlice({
       let accessIndex = state.accessList.findIndex(
         (f) => f.accessName == "view_customer_details"
       );
-      if (accessIndex != -1) {
-        state.accessList[accessIndex].accessGiven = action.payload;
-      } else {
-        let access = {
-          accessName: "view_customer_details",
-          accessGiven: action.payload,
-        };
-        state.accessList.push(access);
-      }
+      state.accessList[accessIndex].accessGiven = action.payload;
     },
     setViewCustomerTransactionAccess: (state, action) => {
       let accessIndex = state.accessList.findIndex(
         (f) => f.accessName == "view_customer_transactions"
       );
-      if (accessIndex != -1) {
-        state.accessList[accessIndex].accessGiven = action.payload;
-      } else {
-        let access = {
-          accessName: "view_customer_transactions",
-          accessGiven: action.payload,
-        };
-        state.accessList.push(access);
-      }
+      state.accessList[accessIndex].accessGiven = action.payload;
     },
     setCreateCustomerAccess: (state, action) => {
       let accessIndex = state.accessList.findIndex(
         (f) => f.accessName == "create_customer"
       );
-      if (accessIndex != -1) {
-        state.accessList[accessIndex].accessGiven = action.payload;
-      } else {
-        let access = {
-          accessName: "create_customer",
-          accessGiven: action.payload,
-        };
-        state.accessList.push(access);
-      }
+      state.accessList[accessIndex].accessGiven = action.payload;
     },
     setApproveCardAccess: (state, action) => {
       let accessIndex = state.accessList.findIndex(
         (f) => f.accessName == "approve_card"
       );
-      if (accessIndex != -1) {
-        state.accessList[accessIndex].accessGiven = action.payload;
-      } else {
-        let access = {
-          accessName: "approve_card",
-          accessGiven: action.payload,
-        };
-        state.accessList.push(access);
-      }
+      state.accessList[accessIndex].accessGiven = action.payload;
     },
   },
 });

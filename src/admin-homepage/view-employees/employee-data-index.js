@@ -12,9 +12,9 @@ export default function EmployeeIndex() {
   const dispatch = useDispatch();
   const [isAddingEmployee, toggleAddEmployee] = useState(false);
   const employee = useSelector((state) => state.employeeReducer.employee);
-  // const employeeAccess = useSelector(
-  //   (state) => state.employeeAccessReducer.accessList
-  // );
+  const accessList = useSelector(
+    (state) => state.employeeAccessReducer.accessList
+  );
 
   const contentToDisplay = () => {
     if (isAddingEmployee) {
@@ -23,9 +23,12 @@ export default function EmployeeIndex() {
     return <ViewEmployees></ViewEmployees>;
   };
 
-  const handleSave = () => {
-    client.addEmployee(employee).then((e) => {
-      dispatch(employeeReducer.addEmployee(employee));
+  const handleAddEmployee = () => {
+    let employeeToAdd = { ...employee, accessList: accessList };
+    client.addEmployee(employeeToAdd).then((e) => {
+      client.getEmployees().then((data) => {
+        dispatch(employeeReducer.setEmployees(data));
+      });
       dispatch(employeeReducer.setEmployee({}));
     });
     toggleAddEmployee(!isAddingEmployee);
@@ -47,7 +50,7 @@ export default function EmployeeIndex() {
             icon="pi pi-save"
             className=" bounded rounded"
             severity="success"
-            onClick={() => handleSave()}
+            onClick={() => handleAddEmployee()}
           ></Button>
         </div>
       );

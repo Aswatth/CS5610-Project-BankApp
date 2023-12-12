@@ -9,8 +9,8 @@ import * as client from "../../../clients/admin-client";
 import * as employeeReducer from "../../../reducers/employee-reducer";
 import { Button } from "primereact/button";
 import { Toast } from "primereact/toast";
-import { useDispatch } from "react-redux";
-import employeeAccessReducer from "../../../reducers/employee-access-reducer";
+import { useDispatch, useSelector } from "react-redux";
+import * as employeeAccessReducer from "../../../reducers/employee-access-reducer";
 
 export default function AddEmployee() {
   const dispatch = useDispatch();
