@@ -1,10 +1,12 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
+  appointmentId: -1,
   selectedBranch: "",
   selectedDate: "",
   selectedStartTime: "",
   selectedEndTime: "",
+  purpose: "",
   customerInfo: {},
 };
 
@@ -13,9 +15,7 @@ const bookAppointmentSlice = createSlice({
   initialState,
   reducers: {
     setBranch: (state, action) => {
-      console.log("Setting branch to: " + action.payload);
       state.selectedBranch = action.payload;
-      console.log(state.selectedBranch);
     },
     setDate: (state, action) => {
       state.selectedDate = action.payload;
@@ -26,12 +26,26 @@ const bookAppointmentSlice = createSlice({
     setEndTime: (state, action) => {
       state.selectedEndTime = action.payload;
     },
-    setCusomterInfo: (state, action) => {
+    setCustomerInfo: (state, action) => {
       state.customerInfo = action.payload;
+    },
+    setAppointmentId: (state, action) => {
+      state.appointmentId = action.payload;
+      console.log(state.appointmentId);
+    },
+    setPurpose: (state, action) => {
+      state.purpose = action.payload;
     },
   },
 });
 
-export const { setBranch, setDate, setStartTime, setEndTime, setCusomterInfo } =
-  bookAppointmentSlice.actions;
+export const {
+  setAppointmentId,
+  setBranch,
+  setDate,
+  setStartTime,
+  setEndTime,
+  setCustomerInfo,
+  setPurpose,
+} = bookAppointmentSlice.actions;
 export default bookAppointmentSlice.reducer;

@@ -7,83 +7,122 @@ import { Tag } from "primereact/tag";
 import { useEffect, useState } from "react";
 
 import * as mapClient from "../../clients/map-client";
+import { getNearestBranches } from "../../clients/admin-client";
 import Map from "./map-index";
 
 import * as bookAppointmentReducer from "../../reducers/book-appointment-reducer";
+import { getBranches } from "../../clients/admin-client";
+import { useDispatch } from "react-redux";
 
 export default function PickLocation() {
-  const locations = [
-    {
-      location: "A1",
-      distance: 0.1,
-      hours: "Mon-Fri 10AM-4PM",
-      selected: false,
-    },
-    {
-      location: "A2",
-      distance: 0.2,
-      hours: "Mon-Fri 10AM-4PM",
-      selected: false,
-    },
-    {
-      location: "A3",
-      distance: 0.3,
-      hours: "Mon-Fri 10AM-4PM",
-      selected: false,
-    },
-    {
-      location: "A4",
-      distance: 0.4,
-      hours: "Mon-Fri 10AM-4PM",
-      selected: false,
-    },
-    {
-      location: "A5",
-      distance: 0.5,
-      hours: "Mon-Fri 10AM-4PM",
-      selected: false,
-    },
-  ];
+  const dispatch = useDispatch();
+  const [branchList, setBranchList] = useState([]);
 
-  const [selectedLocation, updateSelectedLocation] = useState();
+  const [selectedBranch, updateSelectedLocation] = useState();
   const [currentLocation, setCurrentLocation] = useState("");
 
-  const [latitude, setLatitude] = useState();
-  const [longitude, setLongitude] = useState();
+  function calculateDistance(lat1, lon1, lat2, lon2) {
+    const R = 3958.8; // Radius of the Earth in miles
+    const dLat = toRadians(lat2 - lat1);
+    const dLon = toRadians(lon2 - lon1);
+
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(toRadians(lat1)) *
+        Math.cos(toRadians(lat2)) *
+        Math.sin(dLon / 2) *
+        Math.sin(dLon / 2);
+
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+    const distance = R * c; // Distance in miles
+
+    return distance;
+  }
+
+  function toRadians(degrees) {
+    return (degrees * Math.PI) / 180;
+  }
+
+  function getBranches(latitude, longitude) {
+    getNearestBranches(latitude, longitude).then((response) => {
+      setBranchList(
+        response.data.map((m) => {
+          return {
+            ...m,
+            isSelected: false,
+            distance: calculateDistance(
+              latitude,
+              longitude,
+              m.latitude,
+              m.longitude
+            ),
+          };
+        })
+      );
+    });
+  }
+
+  const content = () => {
+    if (branchList.length > 0) {
+      return (
+        <div>
+          <DataTable
+            value={branchList}
+            showGridlines
+            scrollable
+            scrollHeight="350px"
+            className="mb-0"
+          >
+            <Column field="branch" header="Branch"></Column>
+            <Column field="address" header="Address"></Column>
+            <Column
+              field="distance"
+              header="Distance"
+              body={(row) => {
+                return <div>{Math.round(row.distance * 100) / 100}</div>;
+              }}
+            ></Column>
+            <Column body={selectTemplate}></Column>
+          </DataTable>
+          {/* <div className="flex-fill d-flex justify-content-center align-items-center">
+            <Map
+              lat={selectedBranch.latitude}
+              lon={selectedBranch.longitude}
+            ></Map>
+          </div> */}
+        </div>
+      );
+    } else {
+      return <div></div>;
+    }
+  };
 
   useEffect(() => {
-    navigator.geolocation.getCurrentPosition((position) => {
-      //if permission granted
-      setLatitude(position.coords.latitude);
-      setLongitude(position.coords.longitude);
-    });
-  });
+    // navigator.geolocation.getCurrentPosition((position) => {
+    //   //if permission granted
+    //   setLatitude(position.coords.latitude);
+    //   setLongitude(position.coords.longitude);
+    // });
+    // getNearestBranches();
+  }, []);
 
   const selectTemplate = (rowData) => {
-    if (selectedLocation && rowData.location === selectedLocation.location) {
+    if (selectedBranch && rowData.branch === selectedBranch.branch) {
       return <Tag value="Selected" severity="success"></Tag>;
     }
-    if (!rowData.selected) {
+    if (!rowData.isSelected) {
       return (
         <Button
           label="Select"
           className="color-1 border rounded"
           onClick={() => {
-            bookAppointmentReducer.setBranch(rowData.location);
-            updateSelectedLocation({ ...rowData, selected: true });
+            updateSelectedLocation({ ...rowData, isSelected: true });
+            dispatch(bookAppointmentReducer.setBranch(rowData.branch));
           }}
         ></Button>
       );
     }
-  };
-
-  const searchNearestBranches = () => {
-    // console.log(currentLocation);
-    // console.log("Nearest branches");
-    mapClient.LocationToCoord(currentLocation).then((data) => {
-      setLatitude(data.lat);
-      setLongitude(data.lon);
-    });
   };
 
   return (
@@ -102,24 +141,17 @@ export default function PickLocation() {
           <Button
             icon="pi pi-search"
             className="color-1 border"
-            onClick={searchNearestBranches}
+            onClick={() => {
+              mapClient.LocationToCoord(currentLocation).then((data) => {
+                // setLatitude(data.lat);
+                // setLongitude(data.lon);
+                getBranches(data.lat, data.lon);
+              });
+            }}
           />
         </div>
-        <DataTable
-          value={locations}
-          showGridlines
-          scrollable
-          scrollHeight="350px"
-          className="mb-0"
-        >
-          <Column field="location" header="Location"></Column>
-          <Column field="distance" header="Distance"></Column>
-          <Column field="hours" header="Hours"></Column>
-          <Column body={selectTemplate}></Column>
-        </DataTable>
-      </div>
-      <div className="flex-fill d-flex justify-content-center align-items-center">
-        <Map lat={latitude} lon={longitude}></Map>
+
+        <div>{content()}</div>
       </div>
     </div>
   );

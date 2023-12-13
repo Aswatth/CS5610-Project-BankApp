@@ -89,13 +89,22 @@ export const updateEmployee = async (employeeToUpdate) => {
 };
 
 export const getBranches = async () => {
+  const resposne = await axios.get(API + "/branches");
+  return resposne;
+};
+
+export const getNearestBranches = async (lat, lon) => {
+  const resposne = await axios.get(
+    API + `/branches?lat=${lat}&long=${lon}&count=5`
+  );
+  return resposne;
+};
+
+export const getBranchesAdmin = async () => {
   let token = Cookies.get("bank-app-token");
+
   if (token) {
-    const resposne = await axios.get(API + "/branches", {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    const resposne = await axios.get(API + "/branches");
     return resposne;
   } else {
     return null;
@@ -104,7 +113,6 @@ export const getBranches = async () => {
 
 export const addBranch = async (branchToAdd) => {
   let token = Cookies.get("bank-app-token");
-  console.log("Branch to add: " + JSON.stringify(branchToAdd));
 
   if (token) {
     const resposne = await axios.post(API + "/branches", branchToAdd, {
