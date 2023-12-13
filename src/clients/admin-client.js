@@ -79,10 +79,40 @@ export const updateEmployee = async (employeeToUpdate) => {
   if (token) {
     const response = await axios.put(API + "/employees", employeeToUpdate, {
       headers: {
-        Authorization: `Bearer ${Cookies.get("bank-app-token")}`,
+        Authorization: `Bearer ${token}`,
       },
     });
     return response;
+  } else {
+    return null;
+  }
+};
+
+export const getBranches = async () => {
+  let token = Cookies.get("bank-app-token");
+  if (token) {
+    const resposne = await axios.get(API + "/branches", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return resposne;
+  } else {
+    return null;
+  }
+};
+
+export const addBranch = async (branchToAdd) => {
+  let token = Cookies.get("bank-app-token");
+  console.log("Branch to add: " + JSON.stringify(branchToAdd));
+
+  if (token) {
+    const resposne = await axios.post(API + "/branches", branchToAdd, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return resposne;
   } else {
     return null;
   }

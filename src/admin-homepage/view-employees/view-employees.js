@@ -30,13 +30,9 @@ export default function ViewEmployees() {
         navigate("/login");
         return;
       }
-      let branches = [];
-      response.data.map((m) => {
-        if (branches.findIndex((f) => f == m.branch) == -1) {
-          branches.push(m.branch);
-        }
+      client.getBranches().then((branchResponse) => {
+        setBranchList(branchResponse.data.map((m) => m.branch));
       });
-      setBranchList(branches);
       dispatch(employeeReducer.setEmployees(response.data));
     });
   }

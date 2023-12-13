@@ -9,6 +9,8 @@ import { useEffect, useState } from "react";
 import * as mapClient from "../../clients/map-client";
 import Map from "./map-index";
 
+import * as bookAppointmentReducer from "../../reducers/book-appointment-reducer";
+
 export default function PickLocation() {
   const locations = [
     {
@@ -66,7 +68,10 @@ export default function PickLocation() {
         <Button
           label="Select"
           className="color-1 border rounded"
-          onClick={() => updateSelectedLocation({ ...rowData, selected: true })}
+          onClick={() => {
+            bookAppointmentReducer.setBranch(rowData.location);
+            updateSelectedLocation({ ...rowData, selected: true });
+          }}
         ></Button>
       );
     }

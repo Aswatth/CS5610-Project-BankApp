@@ -34,7 +34,7 @@ export default function Map({ lat = null, lon = null }) {
 
     // bankBranches.push({ lat: lat, lon: lon });
 
-    console.log("Adding branches");
+    // console.log("Adding branches");
     //bank branches marker
     bankBranches.map((m) => {
       new maptilersdk.Marker({ color: "#0000FF" })

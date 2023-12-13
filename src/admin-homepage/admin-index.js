@@ -13,6 +13,7 @@ import EmployeeIndex from "./view-employees/employee-data-index";
 import Cookies from "js-cookie";
 import { isAdmin } from "../clients/admin-client";
 import { useEffect } from "react";
+import Branches from "./branches/branches";
 
 export default function AdminPage() {
   const options = [
@@ -31,6 +32,15 @@ export default function AdminPage() {
       component: (
         <Card className="flex-fill">
           <AdminAccessPage></AdminAccessPage>
+        </Card>
+      ),
+    },
+    {
+      name: "Branches",
+      icon: "pi pi-building",
+      component: (
+        <Card className="flex-fill">
+          <Branches />
         </Card>
       ),
     },

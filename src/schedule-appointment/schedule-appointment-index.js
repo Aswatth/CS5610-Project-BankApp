@@ -5,15 +5,23 @@ import { Column } from "primereact/column";
 import { Button } from "primereact/button";
 import "./schedule-appointment-index.css";
 import PickLocation from "./pick-location/pick-location-index";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import PickDateTime from "./pick-date-time/pick-date-time-index";
 import PersonalInformation from "./personal-information/personal-information";
+
+import * as bookAppointmentReducer from "../reducers/book-appointment-reducer";
+import { useSelector } from "react-redux";
 
 export default function ScheduleAppointment() {
   const [activeIndex, setActiveIndex] = useState(0);
   const [scheduleContent, setScheduleContent] = useState();
 
-  const steps = [
+  //appointment date
+  const branch = useSelector(
+    (state) => state.bookAppointmentReducer.selectedBranch
+  );
+
+  const [steps, setSteps] = useState([
     {
       label: "Pick a location",
       component: (
@@ -35,7 +43,7 @@ export default function ScheduleAppointment() {
       component: <PersonalInformation></PersonalInformation>,
     },
     { label: "Review and confirm" },
-  ];
+  ]);
 
   return (
     <div className="color-1 vh-100 d-flex flex-column p-3">
