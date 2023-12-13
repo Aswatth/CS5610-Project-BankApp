@@ -1,46 +1,19 @@
 import { Button } from "primereact/button";
 import { Column } from "primereact/column";
 import { DataTable } from "primereact/datatable";
+import { useEffect, useState } from "react";
+import * as customerClient from "../../clients/customer-client";
 
 export default function CustomerTransactions() {
-  const transactionList = [
-    {
-      transactionType: "CREDIT",
-      to: "1111111111",
-      from: {
-        name: "Checkings",
-        number: "1234567890",
-      },
-      amount: "100",
-    },
-    {
-      transactionType: "DEBIT",
-      to: "1111111111",
-      from: {
-        name: "Checkings",
-        number: "1234567890",
-      },
-      amount: "50",
-    },
-    {
-      transactionType: "DEBIT",
-      to: "2222222222",
-      from: {
-        name: "Savings",
-        number: "0987654321",
-      },
-      amount: "50",
-    },
-    {
-      transactionType: "CREDIT",
-      to: "2222222222",
-      from: {
-        name: "Savings",
-        number: "0987654321",
-      },
-      amount: "500",
-    },
-  ];
+  const [transactionList, setTransactionList] = useState([]);
+
+  useEffect(() => {
+    customerClient.getTransactions().then((response) => {
+      if (response.status == 200 || response.status == 201) {
+        setTransactionList(response.data);
+      }
+    });
+  }, [transactionList]);
 
   const generatePDF = () => {
     import("jspdf").then((jsPDF) => {

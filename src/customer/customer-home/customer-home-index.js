@@ -17,36 +17,39 @@ export default function CustomerHome() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [currentCardIndex, updateCurrentCardIndex] = useState(0);
-  const cardList = [
-    {
-      name: "Platinum",
-      last4Digits: "1234",
-      holderName: "John Doe",
-      expiresOn: "10/15",
-      cvv: "000",
-    },
-    {
-      name: "Gold",
-      last4Digits: "1234",
-      holderName: "John Doe",
-      expiresOn: "10/15",
-      cvv: "000",
-    },
-    {
-      name: "Silver",
-      last4Digits: "1234",
-      holderName: "John Doe",
-      expiresOn: "10/15",
-      cvv: "000",
-    },
-    {
-      name: "Bronze",
-      last4Digits: "1234",
-      holderName: "John Doe",
-      expiresOn: "10/15",
-      cvv: "000",
-    },
-  ];
+
+  const [cardList, setCardList] = useState([]);
+
+  // const cardList = [
+  //   {
+  //     name: "Platinum",
+  //     last4Digits: "1234",
+  //     holderName: "John Doe",
+  //     expiresOn: "10/15",
+  //     cvv: "000",
+  //   },
+  //   {
+  //     name: "Gold",
+  //     last4Digits: "1234",
+  //     holderName: "John Doe",
+  //     expiresOn: "10/15",
+  //     cvv: "000",
+  //   },
+  //   {
+  //     name: "Silver",
+  //     last4Digits: "1234",
+  //     holderName: "John Doe",
+  //     expiresOn: "10/15",
+  //     cvv: "000",
+  //   },
+  //   {
+  //     name: "Bronze",
+  //     last4Digits: "1234",
+  //     holderName: "John Doe",
+  //     expiresOn: "10/15",
+  //     cvv: "000",
+  //   },
+  // ];
 
   const accountList = useSelector((state) => state.customerReducer.accountList);
 
@@ -56,7 +59,14 @@ export default function CustomerHome() {
         dispatch(customerReducer.setAccountList(response.data));
       }
     });
-  }, [accountList]);
+
+    customerClient.getCards().then((response) => {
+      if (response.status == 200) {
+        console.log(response.data);
+        setCardList(response.data);
+      }
+    });
+  }, []);
 
   const [selectedAccount, setSelectedAccount] = useState(null);
 
@@ -97,9 +107,15 @@ export default function CustomerHome() {
   };
 
   const cardTemplate = (cardData) => {
-    return (
-      <CustomerCard cardWidth={300} cardHeight={200} cardData={cardData} />
-    );
+    if (!cardData) {
+      return <div></div>;
+    } else {
+      return (
+        <div className="flex-fill">
+          <CustomerCard cardWidth={300} cardHeight={200} cardData={cardData} />
+        </div>
+      );
+    }
   };
 
   return (
@@ -108,8 +124,8 @@ export default function CustomerHome() {
         <div className="card-transactions-section me-1 d-flex flex-column">
           <div className="border rounded p-3 flex-fill">
             <h2>Cards:</h2>
-            <div className="d-flex justify-content-evenly">
-              <div className="d-flex flex-fill">
+            <div className="d-flex justify-content-center">
+              <div className="d-flex">
                 <Button
                   icon="pi pi-chevron-left"
                   //   rounded
@@ -123,6 +139,7 @@ export default function CustomerHome() {
                       (currentCardIndex - 1) % cardList.length
                     );
                   }}
+                  className="flex-fill"
                 ></Button>
                 {cardTemplate(cardList[currentCardIndex])}
                 <Button
@@ -138,26 +155,8 @@ export default function CustomerHome() {
                       (currentCardIndex + 1) % cardList.length
                     );
                   }}
+                  className="flex-fill"
                 ></Button>
-              </div>
-              <div className="flex-fill">
-                <div className="d-flex flex-column justify-content-evenly">
-                  <Button
-                    label="Card settings"
-                    icon="pi pi-cog"
-                    className="flex-fill color-2 mb-2"
-                  ></Button>
-                  <Button
-                    label="Apply debit card"
-                    icon="pi pi-cog"
-                    className="flex-fill color-2 mb-2"
-                  ></Button>
-                  <Button
-                    label="Apply credit card"
-                    icon="pi pi-cog"
-                    className="flex-fill color-2"
-                  ></Button>
-                </div>
               </div>
             </div>
           </div>

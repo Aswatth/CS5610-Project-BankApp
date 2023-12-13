@@ -12,10 +12,10 @@ export default function CustomerCard({ cardWidth, cardHeight, cardData }) {
         <div className="d-flex flex-fill">
           <div className="d-flex justify-content-start flex-fill fs-4">
             <div className="customer-card-chip"></div>
-            <i className="fw-bold">VISA</i>
+            <i className="fw-bold">{cardData.cardNetwork}</i>
           </div>
           <div className="d-flex justify-content-end flex-fill fs-6">
-            <i className="fw-semibold">{cardData.name}</i>
+            <i className="fw-semibold">{cardData.cardName}</i>
           </div>
         </div>
         {/* Card number */}
@@ -30,7 +30,7 @@ export default function CustomerCard({ cardWidth, cardHeight, cardData }) {
             ****
           </div>
           <div className="flex-fill d-flex justify-content-center fs-4">
-            {cardData.last4Digits}
+            {cardData.cardNumber.slice(-4)}
           </div>
         </div>
         {/* Card holder and expiry info */}
@@ -38,13 +38,13 @@ export default function CustomerCard({ cardWidth, cardHeight, cardData }) {
           <div className="d-flex flex-fill justify-content-start">
             <div className="d-flex flex-column">
               <div>CARD HOLDER</div>
-              <div className="fw-semibold">{cardData.holderName}</div>
+              <div className="fw-semibold">{cardData.cardHolderName}</div>
             </div>
           </div>
           <div className="d-flex flex-fill justify-content-end">
             <div className="d-flex flex-column">
               <div>EXPIRES</div>
-              <div className="fw-semibold">{cardData.expiresOn}</div>
+              <div className="fw-semibold">{cardData.cardExpiry}</div>
             </div>
           </div>
         </div>
@@ -70,7 +70,7 @@ export default function CustomerCard({ cardWidth, cardHeight, cardData }) {
               style={{ color: "black" }}
               className="flex-fill d-flex justify-content-end fw-bold"
             >
-              {cardData.cvv}
+              {cardData.cardCvv}
             </div>
           </div>
         </div>
@@ -80,7 +80,7 @@ export default function CustomerCard({ cardWidth, cardHeight, cardData }) {
             <div className="customer-card-chip"></div>
           </div>
           <div className="d-flex justify-content-end flex-fill fs-4">
-            <i className="fw-bold">VISA</i>
+            <i className="fw-bold">{cardData.cardNetwork}</i>
           </div>
         </div>
       </div>
@@ -96,8 +96,8 @@ export default function CustomerCard({ cardWidth, cardHeight, cardData }) {
           <div
             class="customer-card-front"
             style={{
-              backgroundImage: `var(--${cardData.name.toLowerCase()}-card-front)`,
-              color: `var(--${cardData.name.toLowerCase()}-card-text)`,
+              backgroundImage: `var(--${cardData.cardType.toLowerCase()}-card-front)`,
+              color: `var(--${cardData.cardType.toLowerCase()}-card-text)`,
             }}
           >
             {cardFrontContent()}
@@ -105,8 +105,8 @@ export default function CustomerCard({ cardWidth, cardHeight, cardData }) {
           <div
             class="customer-card-back"
             style={{
-              backgroundImage: `var(--${cardData.name.toLowerCase()}-card-back)`,
-              color: `var(--${cardData.name.toLowerCase()}-card-text)`,
+              backgroundImage: `var(--${cardData.cardType.toLowerCase()}-card-back)`,
+              color: `var(--${cardData.cardType.toLowerCase()}-card-text)`,
             }}
           >
             {cardBackContent()}

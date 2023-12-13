@@ -4,30 +4,42 @@ import { Column } from "primereact/column";
 import { DataTable } from "primereact/datatable";
 import { Dialog } from "primereact/dialog";
 import { Tag } from "primereact/tag";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import CustomerNewCardRequest from "./customer-new-card-request/customer-new-card-request";
+import * as customerClient from "../../clients/customer-client";
 
 export default function CustomerCardRequests() {
-  const cardRequests = [
-    {
-      cardName: "Platinum",
-      requestedOn: "5-Dec-2023",
-      isApproved: -1,
-      reason: "Does not meet the required criteria.",
-    },
-    {
-      cardName: "Gold",
-      requestedOn: "2-Nov-2023",
-      isApproved: 0,
-      reason: "",
-    },
-    {
-      cardName: "Gold",
-      requestedOn: "2-Nov-2023",
-      isApproved: 1,
-      reason: "",
-    },
-  ];
+  // const cardRequests = [
+  //   {
+  //     cardName: "Platinum",
+  //     requestedOn: "5-Dec-2023",
+  //     isApproved: -1,
+  //     reason: "Does not meet the required criteria.",
+  //   },
+  //   {
+  //     cardName: "Gold",
+  //     requestedOn: "2-Nov-2023",
+  //     isApproved: 0,
+  //     reason: "",
+  //   },
+  //   {
+  //     cardName: "Gold",
+  //     requestedOn: "2-Nov-2023",
+  //     isApproved: 1,
+  //     reason: "",
+  //   },
+  // ];
+
+  const [cardRequests, setCardRequests] = useState([]);
+
+  useEffect(() => {
+    customerClient.viewCardRequests().then((resposne) => {
+      if (resposne.status == 200 || resposne.status == 201) {
+        setCardRequests(resposne.data);
+      }
+    });
+  }, [cardRequests]);
+
   const [cardRequestVisibility, updateCardRequestVisibility] = useState(false);
 
   const approvalTemplate = (rowData) => {
@@ -62,11 +74,9 @@ export default function CustomerCardRequests() {
           }}
         ></Button>
         <Dialog
-          header="Header"
+          header="New credit card request"
           visible={cardRequestVisibility}
           onHide={() => updateCardRequestVisibility(!cardRequestVisibility)}
-          //   style={{ width: "50vw" }}
-          //   breakpoints={{ "960px": "75vw", "641px": "100vw" }}
         >
           <CustomerNewCardRequest />
         </Dialog>

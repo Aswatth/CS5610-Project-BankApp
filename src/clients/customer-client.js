@@ -28,10 +28,66 @@ export const getAccounts = async () => {
   }
 };
 
+export const getTransactions = async () => {
+  let token = Cookies.get("bank-app-token");
+  if (token) {
+    const response = await axios.get(API + "/customerTransactions", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response;
+  } else {
+    return null;
+  }
+};
+
+export const getCards = async () => {
+  let token = Cookies.get("bank-app-token");
+  if (token) {
+    const response = await axios.get(API + "/cards", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response;
+  } else {
+    return null;
+  }
+};
+
 export const sendMoney = async (transactionData) => {
   let token = Cookies.get("bank-app-token");
   if (token) {
     const response = await axios.post(API + "/transferMoney", transactionData, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response;
+  } else {
+    return null;
+  }
+};
+
+export const newCreditCardRequest = async (requestData) => {
+  let token = Cookies.get("bank-app-token");
+  if (token) {
+    const response = await axios.post(API + "/applyCreditCard", requestData, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response;
+  } else {
+    return null;
+  }
+};
+
+export const viewCardRequests = async () => {
+  let token = Cookies.get("bank-app-token");
+  if (token) {
+    const response = await axios.get(API + "/viewCardRequests", {
       headers: {
         Authorization: `Bearer ${token}`,
       },

@@ -10,9 +10,9 @@
     --silver-card-text: black;
     --silver-card-back: linear-gradient(to right, grey, white, grey);
 
-    --bronze-card-front : repeating-linear-gradient(45deg, var(--color-1), var(--color-2) 10%, var(--color-3) 20%);
-    --bronze-card-text: white;
-    --bronze-card-back: linear-gradient(to right, var(--color-3), var(--color-1), var(--color-3));
+    --debit-card-front : repeating-linear-gradient(45deg, var(--color-1), var(--color-2) 10%, var(--color-3) 20%);
+    --debit-card-text: white;
+    --debit-card-back: linear-gradient(to right, var(--color-3), var(--color-1), var(--color-3));
 }
 
 .customer-card-chip{
