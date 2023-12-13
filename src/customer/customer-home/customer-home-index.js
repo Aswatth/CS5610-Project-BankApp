@@ -3,15 +3,19 @@ import "./customer-home-index.css";
 import CustomerCard from "./customer-card/customer-card-index";
 import { Button } from "primereact/button";
 import { Carousel } from "primereact/carousel";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import CustomerCurrentBalance from "./customer-current-balance/current-current-balance-index";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { Tag } from "primereact/tag";
 import { useNavigate } from "react-router";
+import { useDispatch, useSelector } from "react-redux";
+import * as customerClient from "../../clients/customer-client";
+import * as customerReducer from "../../reducers/customer-reducer";
 
 export default function CustomerHome() {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [currentCardIndex, updateCurrentCardIndex] = useState(0);
   const cardList = [
     {
@@ -44,18 +48,15 @@ export default function CustomerHome() {
     },
   ];
 
-  const accountList = [
-    {
-      type: "Checkings",
-      number: "1234567890",
-      balance: "$1,000",
-    },
-    {
-      type: "Savings",
-      number: "0987654321",
-      balance: "$10,000",
-    },
-  ];
+  const accountList = useSelector((state) => state.customerReducer.accountList);
+
+  useEffect(() => {
+    customerClient.getAccounts().then((response) => {
+      if (response.status == 200) {
+        dispatch(customerReducer.setAccountList(response.data));
+      }
+    });
+  }, [accountList]);
 
   const [selectedAccount, setSelectedAccount] = useState(null);
 
@@ -172,8 +173,8 @@ export default function CustomerHome() {
           <div className="flex-fill border rounded p-3 ">
             <div className="d-flex">
               <h4 className="flex-fill d-flex justify-content-start">
-                {selectedAccount ? selectedAccount.type + "-" : ""} Account
-                transactions:
+                {selectedAccount ? selectedAccount.accountType + "-" : ""}{" "}
+                Account transactions:
               </h4>
               <Button
                 className="border rounded color-2"
@@ -218,9 +219,9 @@ export default function CustomerHome() {
               selection={selectedAccount}
               onSelectionChange={(s) => setSelectedAccount(s.value)}
             >
-              <Column field="type" header="Account type"></Column>
-              <Column field="number" header="Account number"></Column>
-              <Column field="balance" header="Balance"></Column>
+              <Column field="accountType" header="Account type"></Column>
+              <Column field="accountNumber" header="Account number"></Column>
+              <Column field="accountBalance" header="Balance"></Column>
             </DataTable>
           </div>
         </div>
