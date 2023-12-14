@@ -111,6 +111,25 @@ export const approveOrRejectCardRequest = async (data) => {
   }
 };
 
+export const appointmentResolution = async (resolutionType, appointmentId) => {
+  let token = Cookies.get("bank-app-token");
+  if (token) {
+    const response = await axios.post(
+      API +
+        `/employee/appointmentResolution/${resolutionType}/${appointmentId}`,
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return response;
+  } else {
+    return null;
+  }
+};
+
 export const getEmployeeId = () => {
   let token = Cookies.get("bank-app-token");
   return jwtDecode(token)["user_type_id"];

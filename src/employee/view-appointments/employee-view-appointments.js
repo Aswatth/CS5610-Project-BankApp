@@ -7,8 +7,10 @@ import { useEffect, useState } from "react";
 import EmploayeeCreateCustomer from "../employee-create-customer/employee-create-customer";
 import EmployeeCreateAppointment from "../employee-create-appointment/employee-create-appointment";
 import * as employeeClient from "../../clients/employee-client";
+import { useNavigate } from "react-router";
 
 export default function EmployeeViewAppointments({ hasCreateCusomterAccess }) {
+  const navigate = useNavigate();
   const [appointmentsToDisplay, setAppointmentsToDisplay] = useState([]);
   const [selectedAppointment, setSelectedAppointment] = useState();
 
@@ -17,12 +19,19 @@ export default function EmployeeViewAppointments({ hasCreateCusomterAccess }) {
   const [showCreateAppointment, setCreateAppointmentVisibility] =
     useState(false);
 
-  useEffect(() => {
+  const [appointmentResolutionType, setAppointmentResolutionType] =
+    useState("");
+
+  function getBookedAppointments() {
     employeeClient.getAssignedAppointments().then((response) => {
       if (response.status == 200) {
         setAppointmentsToDisplay(response.data);
       }
     });
+  }
+
+  useEffect(() => {
+    getBookedAppointments();
   }, []);
 
   const markAppointmentAsCompleted = () => {
@@ -45,6 +54,18 @@ export default function EmployeeViewAppointments({ hasCreateCusomterAccess }) {
     // } else {
     //   markAppointmentAsCompleted();
     // }
+  };
+
+  const handleAddressQuery = () => {
+    // markAppointmentAsCompleted();
+    employeeClient
+      .appointmentResolution("Query", selectedAppointment.id)
+      .then((response) => {
+        if (response.status == 200 || response.status == 201) {
+          // getBookedAppointments();
+          navigate(0);
+        }
+      });
   };
 
   const createCustomerUI = () => {
@@ -83,19 +104,29 @@ export default function EmployeeViewAppointments({ hasCreateCusomterAccess }) {
         case "Scheduled":
           let date = new Date(selectedAppointment.date);
           date.setDate(date.getDate() + 1);
-          if (compareDate(new Date(), date))
-            return (
-              <Button
-                label={
-                  rowData.description.toLowerCase() == "query"
-                    ? "Address query"
-                    : "Create new customer account"
-                }
-                className="color-2 border rounded"
-                onClick={handleAppointment}
-              ></Button>
-            );
-          else {
+          if (compareDate(new Date(), date)) {
+            let description = rowData.description.toLowerCase();
+
+            if (description == "query") {
+              setAppointmentResolutionType(description);
+              return (
+                <Button
+                  label={"Address query"}
+                  className="color-2 border rounded"
+                  onClick={handleAddressQuery}
+                ></Button>
+              );
+            } else {
+              // setAppointmentResolutionType(description);
+              return (
+                <Button
+                  label={"Create new account"}
+                  className="color-2 border rounded"
+                  onClick={handleAppointment}
+                ></Button>
+              );
+            }
+          } else {
             return <Tag severity="info">Scheduled</Tag>;
           }
         case "Completed":
@@ -105,8 +136,17 @@ export default function EmployeeViewAppointments({ hasCreateCusomterAccess }) {
       }
     } else if (rowData.id) {
       switch (rowData.status) {
-        case "Scheduled":
+        case "Scheduled": {
+          if (selectedAppointment) {
+            let date = new Date(selectedAppointment.date);
+            date.setDate(date.getDate() + 1);
+            if (compareDate(new Date(), date)) {
+              return <Tag severity="info">Pending</Tag>;
+            }
+          }
+
           return <Tag severity="info">Scheduled</Tag>;
+        }
         case "Completed":
           return <Tag severity="success">Completed</Tag>;
         case "Available":
@@ -147,7 +187,7 @@ export default function EmployeeViewAppointments({ hasCreateCusomterAccess }) {
       </Dialog>
       <DataTable
         value={appointmentsToDisplay.filter((f) => f.customer.customerId != 0)}
-        // scrollHeight="350px"
+        scrollHeight="500px"
         selectionMode="single"
         selection={selectedAppointment}
         onSelectionChange={(e) => setSelectedAppointment(e.value)}
