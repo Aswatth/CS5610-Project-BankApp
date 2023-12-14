@@ -1,7 +1,7 @@
 import { Dropdown } from "primereact/dropdown";
 import { InputText } from "primereact/inputtext";
 import { InputMask } from "primereact/inputmask";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Column } from "primereact/column";
 import { DataTable } from "primereact/datatable";
 
@@ -18,7 +18,7 @@ export default function AddEmployee() {
   const roles = ["employee", "Manager"];
   const [selectedRole, upadateSelectedRole] = useState(null);
 
-  const branches = ["A1", "A2", "A3"];
+  const [branches, setBranches] = useState([]);
   const [selectedBranch, updatedSelectedBranch] = useState(null);
 
   const access = [
@@ -30,8 +30,16 @@ export default function AddEmployee() {
     },
   ];
 
+  useEffect(() => {
+    client.getBranches().then((response) => {
+      if (response.status == 200) {
+        setBranches(response.data.map((m) => m.branch));
+      }
+    });
+  }, []);
+
   return (
-    <div className="d-flex flex-column">
+    <div className="d-flex flex-column flex-fill">
       <div>
         <label htmlFor="firstname" className="form-label">
           Name

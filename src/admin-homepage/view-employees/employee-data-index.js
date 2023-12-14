@@ -95,7 +95,7 @@ export default function EmployeeIndex() {
     <div>
       <Toast ref={toast} />
       <div className="d-flex mb-2">
-        <div className="d-flex justify-content-start flex-fill">
+        <div className="flex-fill d-flex justify-content-start">
           <h2>{isAddingEmployee ? "Add employee" : "Employee list:"}</h2>
         </div>
         <div className="d-flex justify-content-end flex-fill">

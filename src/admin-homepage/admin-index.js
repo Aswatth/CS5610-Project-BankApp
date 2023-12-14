@@ -76,51 +76,47 @@ export default function AdminPage() {
   };
   return (
     <div className="vh-100 color-1 d-flex p-3">
-      <div className="d-flex flex-column">
-        <div className="mb-3">
-          <Card>
-            <h4>Welcome Admin</h4>
-          </Card>
+      <div className="flex-fill d-flex">
+        <div
+          className="side-panel border rounded"
+          style={{ backgroundColor: "white" }}
+        >
+          <div className="d-flex flex-column justify-content-start">
+            <div className="color-2 broder rounded">
+              <h3 className="p-2">Welcome admin</h3>
+            </div>
+            {options.map((m) => {
+              return (
+                <Button
+                  icon={m.icon}
+                  className={`border rounded ${
+                    selectedOption.name == m.name ? "color-2" : "color-3"
+                  }`}
+                  onClick={() => handleSidePanelClick(m)}
+                >
+                  <span className="ms-3">{m.name}</span>
+                </Button>
+              );
+            })}
+          </div>
         </div>
-        <div className="flex-fill d-flex">
-          <div
-            className="side-panel border rounded"
-            style={{ backgroundColor: "white" }}
-          >
-            <div className="d-flex flex-column justify-content-start">
-              {options.map((m) => {
+        <div className="content d-flex flex-column ms-3">
+          <Routes>
+            <Route path="/" element={<Navigate to="home" />} />\
+            {options
+              .filter(
+                (f) => f.name.toLowerCase().replaceAll(" ", "-") != "log-out"
+              )
+              .map((m) => {
+                //   console.log(m);
                 return (
-                  <Button
-                    icon={m.icon}
-                    className={`border rounded ${
-                      selectedOption.name == m.name ? "color-2" : "color-3"
-                    }`}
-                    onClick={() => handleSidePanelClick(m)}
-                  >
-                    <span className="ms-3">{m.name}</span>
-                  </Button>
+                  <Route
+                    path={"/" + m.name.toLowerCase().replaceAll(" ", "-")}
+                    element={m.component}
+                  ></Route>
                 );
               })}
-            </div>
-          </div>
-          <div className="content d-flex flex-column ms-3">
-            <Routes>
-              <Route path="/" element={<Navigate to="home" />} />\
-              {options
-                .filter(
-                  (f) => f.name.toLowerCase().replaceAll(" ", "-") != "log-out"
-                )
-                .map((m) => {
-                  //   console.log(m);
-                  return (
-                    <Route
-                      path={"/" + m.name.toLowerCase().replaceAll(" ", "-")}
-                      element={m.component}
-                    ></Route>
-                  );
-                })}
-            </Routes>
-          </div>
+          </Routes>
         </div>
       </div>
     </div>
