@@ -70,7 +70,7 @@ export default function Login() {
         console.log(cred);
         setCredential(cred);
 
-        handleLogin();
+        // handleLogin();
       } else if (status == 400) {
         console.log("User name already taken");
       } else {
