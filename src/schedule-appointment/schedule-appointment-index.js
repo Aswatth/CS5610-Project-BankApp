@@ -12,8 +12,10 @@ import { useSelector } from "react-redux";
 import ReviewAndSubmitAppoinment from "./review-submit/review-submit";
 import * as appointmentClient from "../clients/appointment-client";
 import * as customerClient from "../clients/customer-client";
+import { useNavigate } from "react-router";
 
 export default function ScheduleAppointment() {
+  const navigate = useNavigate();
   const [activeIndex, setActiveIndex] = useState(0);
   // const [scheduleContent, setScheduleContent] = useState();
 
@@ -39,6 +41,10 @@ export default function ScheduleAppointment() {
   );
 
   const purpose = useSelector((state) => state.bookAppointmentReducer.purpose);
+
+  const jointCustomers = useSelector(
+    (state) => state.bookAppointmentReducer.jointCustomers
+  );
 
   //Customer data
   const customerInfo = useSelector(
@@ -109,7 +115,6 @@ export default function ScheduleAppointment() {
           return;
         }
       case "Review and submit": {
-        console.log("Review");
         let tempSteps = stepsToDisplay;
         tempSteps[activeIndex].component = (
           <ReviewAndSubmitAppoinment
@@ -120,6 +125,7 @@ export default function ScheduleAppointment() {
             }
             customerInfo={customerInfo}
             purpose={purpose}
+            jointAccountUsers={jointCustomers}
           />
         );
         setSteps(tempSteps);
@@ -181,18 +187,29 @@ export default function ScheduleAppointment() {
                   setActiveIndex((activeIndex + 1) % steps.length);
                 } else {
                   if (customerClient.isCustomer()) {
-                    appointmentClient
-                      .ScheduleAppointment(
-                        appointmentId,
-                        null,
-                        customerClient.getCustomerId(),
-                        purpose
-                      )
-                      .then((response) => {
-                        if (response.status == 200 || response.status == 201) {
-                          console.log("appointment booked");
-                        }
-                      });
+                    if (jointCustomers) {
+                      appointmentClient
+                        .scheduleJointAppointment(appointmentId, jointCustomers)
+                        .then((response) => {
+                          navigate("/customer/appointments");
+                        });
+                    } else {
+                      appointmentClient
+                        .ScheduleAppointment(
+                          appointmentId,
+                          null,
+                          customerClient.getCustomerId(),
+                          purpose
+                        )
+                        .then((response) => {
+                          if (
+                            response.status == 200 ||
+                            response.status == 201
+                          ) {
+                            navigate("/customer/appointments");
+                          }
+                        });
+                    }
                   } else {
                     appointmentClient
                       .ScheduleAppointment(
@@ -203,7 +220,7 @@ export default function ScheduleAppointment() {
                       )
                       .then((response) => {
                         if (response.status == 200 || response.status == 201) {
-                          console.log("appointment booked");
+                          navigate("/login");
                         }
                       });
                   }

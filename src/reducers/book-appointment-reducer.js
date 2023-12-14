@@ -8,6 +8,7 @@ const initialState = {
   selectedEndTime: "",
   purpose: "",
   customerInfo: {},
+  jointCustomers: [],
 };
 
 const bookAppointmentSlice = createSlice({
@@ -36,6 +37,9 @@ const bookAppointmentSlice = createSlice({
     setPurpose: (state, action) => {
       state.purpose = action.payload;
     },
+    setJointCustomers: (state, action) => {
+      state.jointCustomers = action.payload;
+    },
   },
 });
 
@@ -47,5 +51,6 @@ export const {
   setEndTime,
   setCustomerInfo,
   setPurpose,
+  setJointCustomers,
 } = bookAppointmentSlice.actions;
 export default bookAppointmentSlice.reducer;

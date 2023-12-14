@@ -56,10 +56,10 @@ export default function EmployeeViewAppointments({ hasCreateCusomterAccess }) {
     // }
   };
 
-  const handleAddressQuery = () => {
+  const handleAppointmentResolution = (resolutionType) => {
     // markAppointmentAsCompleted();
     employeeClient
-      .appointmentResolution("Query", selectedAppointment.id)
+      .appointmentResolution(resolutionType, selectedAppointment.id)
       .then((response) => {
         if (response.status == 200 || response.status == 201) {
           // getBookedAppointments();
@@ -107,13 +107,17 @@ export default function EmployeeViewAppointments({ hasCreateCusomterAccess }) {
           if (compareDate(new Date(), date)) {
             let description = rowData.description.toLowerCase();
 
-            if (description == "query") {
+            if (description != "create new account") {
               setAppointmentResolutionType(description);
               return (
                 <Button
-                  label={"Address query"}
+                  label={description}
                   className="color-2 border rounded"
-                  onClick={handleAddressQuery}
+                  onClick={() => {
+                    description == "query"
+                      ? handleAppointmentResolution("Query")
+                      : handleAppointmentResolution("jointAccountCreation");
+                  }}
                 ></Button>
               );
             } else {

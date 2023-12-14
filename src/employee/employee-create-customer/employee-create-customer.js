@@ -13,7 +13,7 @@ export default function EmploayeeCreateCustomer({ customerData }) {
 
   const [accounts, setAccounts] = useState([]);
 
-  const accountTypes = ["Checkings", "Savings"];
+  const accountTypes = ["Checking", "Savings"];
   const [selectedAccount, setSelectedAccount] = useState(accountTypes[0]);
 
   const [initialBalance, setInitialBalance] = useState(0);
