@@ -34,9 +34,11 @@ export default function ViewEmployees() {
           setBranchList(branchResponse.data.map((m) => m.branch));
           dispatch(employeeReducer.setEmployees(response.data));
         })
-        .catch(() => {
-          navigate("/login");
-          return;
+        .catch((response) => {
+          if (response != null || response.status == 401) {
+            navigate("/login");
+            return;
+          }
         });
     });
   }
