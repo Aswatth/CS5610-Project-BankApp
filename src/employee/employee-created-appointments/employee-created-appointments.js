@@ -3,12 +3,18 @@ import { useEffect, useState } from "react";
 import * as employeeClient from "../../clients/employee-client";
 import { Column } from "primereact/column";
 import { Calendar } from "primereact/calendar";
+import { useNavigate } from "react-router";
 
 export default function EmployeeCreatedAppointments() {
+  const navigate = useNavigate();
   const [date, setDate] = useState(new Date());
   const [availableAppointments, setAvailableAppointments] = useState([]);
 
   useEffect(() => {
+    if (!employeeClient.isEmployee()) {
+      navigate("/login");
+      return;
+    }
     getAppointments(date);
   }, []);
 

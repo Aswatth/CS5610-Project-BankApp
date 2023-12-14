@@ -31,6 +31,10 @@ export default function EmployeeViewAppointments({ hasCreateCusomterAccess }) {
   }
 
   useEffect(() => {
+    if (!employeeClient.isEmployee()) {
+      navigate("/login");
+      return;
+    }
     getBookedAppointments();
   }, []);
 

@@ -1,8 +1,10 @@
 import { Button } from "primereact/button";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import * as employeeClient from "../../clients/employee-client";
+import { useNavigate } from "react-router";
 
 export default function EmployeeCreateAppointment() {
+  const navigate = useNavigate();
   const [appointment, setAppointment] = useState({ intervalMins: 30 });
 
   const appointmentList = [];
@@ -15,6 +17,12 @@ export default function EmployeeCreateAppointment() {
     return `${year}-${month}-${day}`;
   }
 
+  useEffect(() => {
+    if (!employeeClient.isEmployee()) {
+      navigate("/login");
+      return;
+    }
+  }, []);
   function formatTimeTo12HourFormat(date) {
     const hours = date.getHours();
     const minutes = date.getMinutes();

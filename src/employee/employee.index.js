@@ -12,6 +12,7 @@ import { useEffect } from "react";
 import EmployeeViewCustomers from "./view-customers/employee-view-customers";
 import EmployeeCardRequests from "./employee-card-requests/employee-card-requests";
 import EmployeeCreatedAppointments from "./employee-created-appointments/employee-created-appointments";
+import Cookies from "js-cookie";
 
 export default function Employee({ employeeAccess }) {
   const { pathname } = useLocation();
@@ -20,16 +21,16 @@ export default function Employee({ employeeAccess }) {
 
   function createOptions() {
     let initialOptions = [
-      {
-        name: "Profile",
-        icon: "pi pi-user",
-        component: (
-          <Card className="flex-fill">
-            View profile. Contains name, email, phone num, address, accounts.
-            Provides ability to update each of them after an email confirmation.
-          </Card>
-        ),
-      },
+      // {
+      //   name: "Profile",
+      //   icon: "pi pi-user",
+      //   component: (
+      //     <Card className="flex-fill">
+      //       View profile. Contains name, email, phone num, address, accounts.
+      //       Provides ability to update each of them after an email confirmation.
+      //     </Card>
+      //   ),
+      // },
       {
         name: "Home",
         icon: "pi pi-home",
@@ -106,17 +107,18 @@ export default function Employee({ employeeAccess }) {
   const selectedOption = getSelectedOption();
 
   const handleSidePanelClick = (option) => {
-    // console.log(option.name.toLowerCase().replaceAll(" ", "-"));
-    if (!pathname.includes("log-out")) {
-      if (selectedOption.name != option.name) {
-        let formattedOptionName = option.name
-          .toLowerCase()
-          .replaceAll(" ", "-");
-        // console.log(selectedOption);
-        navigate(`${formattedOptionName}`);
+    if (selectedOption.name != option.name) {
+      let formattedOptionName = option.name.toLowerCase().replaceAll(" ", "-");
+      if (formattedOptionName == "log-out") {
+        Cookies.remove("bank-app-token");
+        navigate("/login");
+        return;
       }
+      navigate(`${formattedOptionName}`);
+      return;
     } else {
       navigate("/login");
+      return;
     }
   };
 

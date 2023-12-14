@@ -5,8 +5,10 @@ import * as employeeClient from "../../clients/employee-client";
 import { Button } from "primereact/button";
 import { Dialog } from "primereact/dialog";
 import { Tag } from "primereact/tag";
+import { useNavigate } from "react-router";
 
 export default function EmployeeViewCustomers() {
+  const navigate = useNavigate();
   const [customers, setCustomers] = useState([]);
   const [selectedCustomer, setCustomer] = useState(null);
   const [showMore, toggleShowMore] = useState(false);
@@ -16,6 +18,10 @@ export default function EmployeeViewCustomers() {
   const [transactionList, setTransactionList] = useState([]);
 
   useEffect(() => {
+    if (!employeeClient.isEmployee()) {
+      navigate("/login");
+      return;
+    }
     employeeClient.viewCustomers().then((response) => {
       if (response.status == 200) {
         setCustomers(response.data);
