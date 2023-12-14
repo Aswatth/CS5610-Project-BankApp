@@ -3,7 +3,7 @@ import { Calendar } from "primereact/calendar";
 import { Dropdown } from "primereact/dropdown";
 import { InputNumber } from "primereact/inputnumber";
 import { InputText } from "primereact/inputtext";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import * as customerClient from "../../clients/customer-client";
 import { useNavigate } from "react-router";
@@ -16,6 +16,13 @@ export default function CustomerSendMoney() {
 
   const [transferDetails, setTransferDetails] = useState({});
 
+  useEffect(() => {
+    console.log(customerClient.isCustomer());
+    if (!customerClient.isCustomer()) {
+      navigate("/login");
+      return;
+    }
+  }, []);
   return (
     <div className="d-flex flex-column">
       <Dropdown

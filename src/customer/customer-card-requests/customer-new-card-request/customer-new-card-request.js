@@ -9,7 +9,6 @@ import { useNavigate } from "react-router";
 export default function CustomerNewCardRequest() {
   const navigate = useNavigate();
   const creditCardTypes = ["Platinum", "Gold", "Silver"];
-  const [selectedCardType, updateSelectedCardType] = useState();
   const [cardRequestData, updateCardRequestData] = useState({
     cardType: "credit",
     cardNetwork: "VISA",

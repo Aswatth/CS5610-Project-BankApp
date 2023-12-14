@@ -55,14 +55,21 @@ export default function CustomerHome() {
 
   useEffect(() => {
     customerClient.getAccounts().then((response) => {
+      if (!customerClient.isCustomer()) {
+        navigate("/login");
+        return;
+      }
       if (response.status == 200) {
         dispatch(customerReducer.setAccountList(response.data));
       }
     });
 
     customerClient.getCards().then((response) => {
+      if (response == null || response.status == 401) {
+        navigate("/login");
+        return;
+      }
       if (response.status == 200) {
-        console.log(response.data);
         setCardList(response.data);
       }
     });

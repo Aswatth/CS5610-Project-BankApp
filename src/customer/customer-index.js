@@ -14,6 +14,8 @@ import CustomerTransactions from "./customer-transactions/customer-transactions-
 import CustomerCardRequests from "./customer-card-requests/customer-card-requests";
 import CustomerSendMoney from "./customer-send-money/customer-send-money";
 import CustomerAppoointments from "./customer-appointments/customer-appointments";
+import Cookies from "js-cookie";
+import CustomerProfile from "./customer-profile/customer-profile";
 
 export default function CustomerPage() {
   const navigate = useNavigate();
@@ -24,8 +26,7 @@ export default function CustomerPage() {
       icon: "pi pi-user",
       component: (
         <Card className="flex-fill">
-          View profile. Contains name, email, phone num, address, accounts.
-          Provides ability to update each of them after an email confirmation.
+          <CustomerProfile />
         </Card>
       ),
     },
@@ -52,9 +53,6 @@ export default function CustomerPage() {
       icon: "pi pi-arrow-right-arrow-left",
       component: (
         <Card className="flex-fill">
-          {/* View performed transactions and clicking out will display more
-          information along with the ability to repeat the transaction with
-          updated amount. */}
           <CustomerTransactions />
         </Card>
       ),
@@ -89,13 +87,18 @@ export default function CustomerPage() {
   );
 
   const handleSidePanelClick = (option) => {
-    if (!pathname.includes("log-out")) {
-      if (selectedOption.name != option.name) {
-        let formattedOptionName = option.name.toLowerCase().replace(" ", "-");
-        navigate(`${formattedOptionName}`);
+    if (selectedOption.name != option.name) {
+      let formattedOptionName = option.name.toLowerCase().replace(" ", "-");
+      if (formattedOptionName == "log-out") {
+        Cookies.remove("bank-app-token");
+        navigate("/login");
+        return;
       }
+      navigate(`${formattedOptionName}`);
+      return;
     } else {
       navigate("/login");
+      return;
     }
   };
 

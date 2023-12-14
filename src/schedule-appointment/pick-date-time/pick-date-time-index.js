@@ -56,6 +56,7 @@ export default function PickDateTime() {
             value={availableAppointments}
             selectionMode="row"
             selection={selectedAppointment}
+            scrollHeight="200px"
             onSelectionChange={(e) => {
               dispatch(
                 bookAppointmentReducer.setStartTime(e.value[0].startTime)
@@ -82,7 +83,9 @@ export default function PickDateTime() {
             <Column field="endTime" header="End time"></Column>
           </DataTable>
 
+          <label htmlFor="purpose">Purpose:</label>
           <Dropdown
+            id="purpose"
             options={purposes}
             value={selectedPurpose}
             onChange={(c) => {

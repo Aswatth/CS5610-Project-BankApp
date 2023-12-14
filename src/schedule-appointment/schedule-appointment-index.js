@@ -11,6 +11,7 @@ import PersonalInformation from "./personal-information/personal-information";
 import { useSelector } from "react-redux";
 import ReviewAndSubmitAppoinment from "./review-submit/review-submit";
 import * as appointmentClient from "../clients/appointment-client";
+import * as customerClient from "../clients/customer-client";
 
 export default function ScheduleAppointment() {
   const [activeIndex, setActiveIndex] = useState(0);
@@ -75,8 +76,14 @@ export default function ScheduleAppointment() {
   const [isNextDisabled, setNextDisable] = useState(true);
 
   useEffect(() => {
-    switch (activeIndex) {
-      case 0:
+    if (customerClient.isCustomer()) {
+      let temp = stepsToDisplay;
+      temp = temp.filter((f) => f.label != "Personal information");
+      setSteps(temp);
+    }
+
+    switch (stepsToDisplay[activeIndex].label) {
+      case "Pick a location":
         if (branch) {
           let tempSteps = stepsToDisplay;
           tempSteps[activeIndex].label = branch;
@@ -85,7 +92,7 @@ export default function ScheduleAppointment() {
           return;
         }
         break;
-      case 1:
+      case "Pick date and time":
         if (date && startTime && endTime) {
           let tempSteps = stepsToDisplay;
           tempSteps[activeIndex].label =
@@ -96,12 +103,13 @@ export default function ScheduleAppointment() {
           return;
         }
         break;
-      case 2:
+      case "Personal information":
         if (customerInfo) {
           setNextDisable(false);
           return;
         }
-      case 3: {
+      case "Review and submit": {
+        console.log("Review");
         let tempSteps = stepsToDisplay;
         tempSteps[activeIndex].component = (
           <ReviewAndSubmitAppoinment
@@ -151,24 +159,55 @@ export default function ScheduleAppointment() {
           {previousButtonTemplate()}
           <div className="flex-fill d-flex justify-content-end">
             <Button
-              label={activeIndex == 3 ? "Submit" : "Next"}
-              className={
-                (activeIndex < 3 ? "color-2 " : "") + "border rounded "
+              label={
+                stepsToDisplay[activeIndex].label == "Review and submit"
+                  ? "Submit"
+                  : "Next"
               }
-              severity={activeIndex == 3 ? "success" : ""}
+              className={
+                (stepsToDisplay[activeIndex].label != "Review and submit"
+                  ? "color-2 "
+                  : "") + "border rounded "
+              }
+              severity={
+                stepsToDisplay[activeIndex].label == "Review and submit"
+                  ? "success"
+                  : ""
+              }
               disabled={isNextDisabled}
               onClick={() => {
-                if (activeIndex < 3) {
+                if (stepsToDisplay[activeIndex].label != "Review and submit") {
                   setNextDisable(true);
                   setActiveIndex((activeIndex + 1) % steps.length);
                 } else {
-                  appointmentClient
-                    .ScheduleAppointment(appointmentId, customerInfo, purpose)
-                    .then((response) => {
-                      if (response.status == 200 || response.status == 201) {
-                        console.log("appointment booked");
-                      }
-                    });
+                  if (customerClient.isCustomer()) {
+                    appointmentClient
+                      .ScheduleAppointment(
+                        appointmentId,
+                        null,
+                        customerClient.getCustomerId(),
+                        purpose
+                      )
+                      .then((response) => {
+                        if (response.status == 200 || response.status == 201) {
+                          console.log("appointment booked");
+                        }
+                      });
+                  } else {
+                    appointmentClient
+                      .ScheduleAppointment(
+                        appointmentId,
+                        customerInfo,
+                        null,
+                        purpose
+                      )
+                      .then((response) => {
+                        if (response.status == 200 || response.status == 201) {
+                          console.log("appointment booked");
+                        }
+                      });
+                  }
+
                   // setNextDisable(false);
                 }
               }}

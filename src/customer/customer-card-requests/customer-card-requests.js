@@ -1,4 +1,3 @@
-import { click } from "@testing-library/user-event/dist/click";
 import { Button } from "primereact/button";
 import { Column } from "primereact/column";
 import { DataTable } from "primereact/datatable";
@@ -7,48 +6,35 @@ import { Tag } from "primereact/tag";
 import { useEffect, useState } from "react";
 import CustomerNewCardRequest from "./customer-new-card-request/customer-new-card-request";
 import * as customerClient from "../../clients/customer-client";
+import { useNavigate } from "react-router";
 
 export default function CustomerCardRequests() {
-  // const cardRequests = [
-  //   {
-  //     cardName: "Platinum",
-  //     requestedOn: "5-Dec-2023",
-  //     isApproved: -1,
-  //     reason: "Does not meet the required criteria.",
-  //   },
-  //   {
-  //     cardName: "Gold",
-  //     requestedOn: "2-Nov-2023",
-  //     isApproved: 0,
-  //     reason: "",
-  //   },
-  //   {
-  //     cardName: "Gold",
-  //     requestedOn: "2-Nov-2023",
-  //     isApproved: 1,
-  //     reason: "",
-  //   },
-  // ];
+  const navigate = useNavigate();
 
   const [cardRequests, setCardRequests] = useState([]);
 
   useEffect(() => {
-    customerClient.viewCardRequests().then((resposne) => {
-      if (resposne.status == 200 || resposne.status == 201) {
-        setCardRequests(resposne.data);
+    customerClient.viewCardRequests().then((response) => {
+      if (!customerClient.isCustomer()) {
+        navigate("/login");
+        return;
+      }
+      if (response.status == 200 || response.status == 201) {
+        console.log(response.data);
+        setCardRequests(response.data);
       }
     });
-  }, [cardRequests]);
+  }, []);
 
   const [cardRequestVisibility, updateCardRequestVisibility] = useState(false);
 
   const approvalTemplate = (rowData) => {
-    switch (rowData.isApproved) {
-      case 1:
+    switch (rowData.status) {
+      case "approved":
         return <Tag severity="success">Approved</Tag>;
-      case 0:
+      case "pending":
         return <Tag severity="warning">Pending approval</Tag>;
-      case -1:
+      case "rejected":
         return (
           <div>
             <Tag severity="danger">Rejected</Tag>
@@ -83,9 +69,9 @@ export default function CustomerCardRequests() {
       </div>
       <DataTable value={cardRequests}>
         <Column field="cardName" header="Card name"></Column>
-        <Column field="requestedOn" header="Requested on"></Column>
+        <Column field="cardLimit" header="Limit"></Column>
         <Column
-          field="isApproved"
+          field="status"
           header="Approval status"
           body={approvalTemplate}
         ></Column>

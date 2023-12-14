@@ -3,12 +3,18 @@ import { Column } from "primereact/column";
 import { DataTable } from "primereact/datatable";
 import { useEffect, useState } from "react";
 import * as customerClient from "../../clients/customer-client";
+import { useNavigate } from "react-router";
 
 export default function CustomerTransactions() {
+  const navigate = useNavigate();
   const [transactionList, setTransactionList] = useState([]);
 
   useEffect(() => {
     customerClient.getTransactions().then((response) => {
+      if (!customerClient.isCustomer()) {
+        navigate("/login");
+        return;
+      }
       if (response.status == 200 || response.status == 201) {
         setTransactionList(response.data);
       }

@@ -1,42 +1,74 @@
 import { Button } from "primereact/button";
 import { Column } from "primereact/column";
 import { DataTable } from "primereact/datatable";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
+import * as customerClient from "../../clients/customer-client";
+import * as appointmentClient from "../../clients/appointment-client";
+import { Tag } from "primereact/tag";
+import { Dialog } from "primereact/dialog";
+import { Calendar } from "primereact/calendar";
 
 export default function CustomerAppoointments() {
   const navigate = useNavigate();
-  const appointments = [
-    { id: 1, date: "18-Dec", time: "9:00 AM - 10:00 PM", purpose: "Query" },
-    { id: 2, date: "19-Dec", time: "4:00 PM - 4:30 PM", purpose: "Query" },
-    {
-      id: 3,
-      date: "20-Dec",
-      time: "1:00 AM - 2:00 PM",
-      purpose: "New account creation",
-    },
-  ];
 
-  const [appointmentsToDisplay, setAppointments] = useState(appointments);
+  const [appointmentsToDisplay, setAppointments] = useState([]);
   const [selectedAppointment, setSeletedAppointment] = useState();
+
+  //Edit
+  const [showEditAppointment, toggleEditAppointment] = useState(false);
+  const [selectedDate, setSelectedDate] = useState([]);
+  const [otherAvailableAppointments, setOtherAVailableAppointments] =
+    useState();
+  const [newAppointment, setNewAppointment] = useState(null);
+
+  const getAppointments = () => {
+    customerClient.viewAppointments().then((response) => {
+      if (response.status == 200) {
+        setAppointments(response.data);
+      }
+    });
+  };
+
+  function YYYYMMDDToDate(formattedDate) {
+    const dateArray = formattedDate.split("-").map(Number);
+    const dateObject = new Date(dateArray[0], dateArray[1] - 1, dateArray[2]);
+    return dateObject;
+  }
+
+  useEffect(() => {
+    if (!customerClient.isCustomer()) {
+      navigate("/login");
+      return;
+    } else {
+      getAppointments();
+    }
+  }, []);
 
   const selectedAppointmentOptions = (row) => {
     if (row.id == selectedAppointment.id) {
       return (
         <div className="d-flex justify-content-evenly">
-          <Button icon="pi pi-pencil"></Button>
+          <Button
+            icon="pi pi-pencil"
+            onClick={() => {
+              setSelectedDate(YYYYMMDDToDate(selectedAppointment.date));
+              getOtherAppointmentsByDate(
+                YYYYMMDDToDate(selectedAppointment.date)
+              );
+              toggleEditAppointment(true);
+            }}
+          ></Button>
           <Button
             icon="pi pi-times"
             onClick={() => {
-              let newAppts = appointmentsToDisplay;
-              newAppts.splice(
-                appointmentsToDisplay.findIndex(
-                  (f) => f.id == selectedAppointment.id
-                ),
-                1
-              );
-              setAppointments(newAppts);
-              setSeletedAppointment(null);
+              customerClient
+                .cancelAppointment(selectedAppointment.id)
+                .then((response) => {
+                  if (response.status == 200) {
+                    getAppointments();
+                  }
+                });
             }}
           ></Button>
         </div>
@@ -45,15 +77,88 @@ export default function CustomerAppoointments() {
   };
 
   const handleAppointmentSelection = () => {
-    if (selectedAppointment) {
+    if (
+      selectedAppointment &&
+      selectedAppointment.status.toLowerCase() != "completed"
+    ) {
       return (
         <Column field="" header="" body={selectedAppointmentOptions}></Column>
       );
     }
   };
 
+  function getOtherAppointmentsByDate(date) {
+    if (date) {
+      appointmentClient
+        .getAppointments(
+          date.getFullYear() +
+            "-" +
+            (date.getMonth() + 1) +
+            "-" +
+            date.getDate()
+        )
+        .then((response) => {
+          if (response.status == 200) {
+            setOtherAVailableAppointments(response.data);
+          }
+        });
+    } else {
+      setOtherAVailableAppointments([]);
+    }
+  }
+
   return (
     <div>
+      <Dialog
+        visible={showEditAppointment}
+        onHide={() => toggleEditAppointment(false)}
+        header="Edit appointment"
+      >
+        <div>
+          <Calendar
+            value={selectedDate}
+            onChange={(c) => {
+              setSelectedDate(c.value);
+              getOtherAppointmentsByDate(c.value);
+              setNewAppointment(null);
+            }}
+          />
+          <DataTable
+            value={otherAvailableAppointments}
+            selectionMode="row"
+            selection={newAppointment}
+            onSelectionChange={(s) => {
+              setNewAppointment(s.value[0]);
+            }}
+          >
+            <Column field="date" header="Date"></Column>
+            <Column field="startTime" header="Start time"></Column>
+            <Column field="endTime" header="End time"></Column>
+          </DataTable>
+          <Button
+            label="Update appointment"
+            disabled={
+              otherAvailableAppointments
+                ? otherAvailableAppointments.length == 0 ||
+                  newAppointment == null
+                : true
+            }
+            onClick={() => {
+              customerClient
+                .rescheduleAppointment(
+                  selectedAppointment.id,
+                  newAppointment.id
+                )
+                .then((response) => {
+                  if (response.status == 200 || response.status == 201) {
+                    getAppointments();
+                    toggleEditAppointment(false);
+                  }
+                });
+            }}
+          ></Button>
+        </div>
+      </Dialog>
       <div className="d-flex justify-content-end">
         <Button
           label="New appointment"
@@ -72,8 +177,21 @@ export default function CustomerAppoointments() {
         selec
       >
         <Column field="date" header="Date"></Column>
-        <Column field="time" header="Time"></Column>
-        <Column field="purpose" header="Purpose"></Column>
+        <Column field="branch" header="Branch"></Column>
+        <Column field="startTime" header="Start Time"></Column>
+        <Column field="endTime" header="End Time"></Column>
+        <Column
+          field="status"
+          header="Status"
+          body={(row) => {
+            switch (row.status) {
+              case "Completed":
+                return <Tag severity="success">Completed</Tag>;
+              case "Scheduled":
+                return <Tag severity="info">Scheduled</Tag>;
+            }
+          }}
+        ></Column>
         {handleAppointmentSelection()}
       </DataTable>
     </div>

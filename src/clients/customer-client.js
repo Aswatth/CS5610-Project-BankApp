@@ -1,5 +1,6 @@
 import axios from "axios";
 import Cookies from "js-cookie";
+import { jwtDecode } from "jwt-decode";
 import { useState } from "react";
 
 const API = process.env.REACT_APP_API;
@@ -84,6 +85,64 @@ export const newCreditCardRequest = async (requestData) => {
   }
 };
 
+export const viewAppointments = async () => {
+  let token = Cookies.get("bank-app-token");
+  if (token) {
+    const response = await axios.get(API + "/viewAppointments", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response;
+  } else {
+    return null;
+  }
+};
+
+export const cancelAppointment = async (appointmentIdToDelete) => {
+  let token = Cookies.get("bank-app-token");
+  if (token) {
+    const response = await axios.post(
+      API + `/cancelAppointment?id=${appointmentIdToDelete}`,
+      "",
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return response;
+  } else {
+    return null;
+  }
+};
+
+export const rescheduleAppointment = async (
+  oldAppointmentId,
+  newAppointmentId
+) => {
+  let requestBody = {
+    oldAppointmentId: oldAppointmentId,
+    newAppointmentId: newAppointmentId,
+  };
+  console.log(requestBody);
+  let token = Cookies.get("bank-app-token");
+  if (token) {
+    const response = await axios.post(
+      API + `/rescheduleAppointment`,
+      requestBody,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return response;
+  } else {
+    return null;
+  }
+};
+
 export const viewCardRequests = async () => {
   let token = Cookies.get("bank-app-token");
   if (token) {
@@ -96,4 +155,32 @@ export const viewCardRequests = async () => {
   } else {
     return null;
   }
+};
+
+export const getProfile = async () => {
+  let token = Cookies.get("bank-app-token");
+  console(getCustomerId());
+  if (token) {
+    const response = await axios.get(
+      API + `/customer?customerId=${getCustomerId()}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    console.log(response.data);
+    return response;
+  } else {
+    return null;
+  }
+};
+
+export const getCustomerId = () => {
+  let token = Cookies.get("bank-app-token");
+  return jwtDecode(token)["user_type_id"];
+};
+export const isCustomer = () => {
+  let token = Cookies.get("bank-app-token");
+  return token ? jwtDecode(token)["user_type"] == "customer" : false;
 };

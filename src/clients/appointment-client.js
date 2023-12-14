@@ -12,20 +12,14 @@ export const getAppointments = async (selectedDate) => {
 export const ScheduleAppointment = async (
   appointmentId,
   customerInfo,
+  customerId,
   purpose
 ) => {
   let dataToSend = {
     appointmentId: appointmentId,
-    firstName: customerInfo.firstName,
-    lastName: customerInfo.lastName,
-    dateOfBirth: customerInfo.dateOfBirth,
-    username: customerInfo.username,
-    password: customerInfo.password,
-    address: customerInfo.address,
-    email: customerInfo.email,
-    phone: customerInfo.phone,
+    customerDetails: customerInfo,
     purpose: purpose,
-    // customerId: "",
+    customerId: customerId,
   };
   const response = await axios.post(API + `/bookAppointment`, dataToSend);
   return response;
