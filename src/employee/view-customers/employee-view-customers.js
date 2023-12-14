@@ -29,36 +29,6 @@ export default function EmployeeViewCustomers() {
     });
   }, []);
 
-  // const accountNameTemplate = (rowData) => {
-  //   return (
-  //     <div className="d-flex flex-column">
-  //       {rowData.accounts.map((m) => {
-  //         return <div>{m.name}</div>;
-  //       })}
-  //     </div>
-  //   );
-  // };
-
-  // const accountNumberTemplate = (rowData) => {
-  //   return (
-  //     <div className="d-flex flex-column">
-  //       {rowData.accounts.map((m) => {
-  //         return <div>{m.number}</div>;
-  //       })}
-  //     </div>
-  //   );
-  // };
-
-  // const accountBalanceTemplate = (rowData) => {
-  //   return (
-  //     <div className="d-flex flex-column">
-  //       {rowData.accounts.map((m) => {
-  //         return <div>{m.balance}</div>;
-  //       })}
-  //     </div>
-  //   );
-  // };
-
   const viewMoreTemplate = (row) => {
     if (selectedCustomer && selectedCustomer.customerId == row.customerId) {
       return (
@@ -148,7 +118,7 @@ export default function EmployeeViewCustomers() {
     if (selectedCustomer) {
       return (
         <div>
-          <DataTable value={transactionList}>
+          <DataTable value={transactionList} scrollable scrollHeight="250px">
             <Column field="transactionDate" header="Date"></Column>
             <Column field="senderAccount" header="From"></Column>
             <Column field="receiverAccount" header="To"></Column>
@@ -199,6 +169,8 @@ export default function EmployeeViewCustomers() {
         value={customers}
         selection="row"
         selectionMode="single"
+        scrollable
+        scrollHeight="600px"
         onSelectionChange={(s) => {
           setCustomer(s.value);
         }}

@@ -247,7 +247,7 @@ export default function Login() {
       <div className="login-background d-flex flex-column border rounded">
         <div className="brand-logo m-0 p-0">
           <img src={logo} alt="logo" width={100} className="m-0 p-0" />
-          <h3 className="ps-4">The project</h3>
+          <h3 className="ps-4">The Mock Bank</h3>
         </div>
         <div className="login-element d-flex align-items-center p-3">
           <div className="flex-fill d-flex flex-column justify-content-evenly">
@@ -291,12 +291,23 @@ export default function Login() {
           </div>
         </div>
         <div className="fw-light fst-italic warning-message p-3">
-          This is a sample text. Something meaningful will go here.
+          We are thrilled to welcome you to the digital doorstep of Mock Bank.
+          Your trusted financial partner committed to making banking convenient,
+          secure, and tailored to your needs. With our Online Banking platform,
+          you have the power to manage your finances anytime, anywhere. Whether
+          you're checking account balances, transferring funds, paying bills, or
+          exploring our range of services, we've designed a seamless experience
+          with your comfort in mind. Our top-notch security measures ensure that
+          your financial information is protected, giving you peace of mind as
+          you navigate the world of digital banking. Thank you for choosing Mock
+          Bank. We are here to assist you on your financial journey and look
+          forward to serving you with excellence.
         </div>
       </div>
       <div className="brand-info d-none d-lg-block">
-        <div className="d-flex justify-content-center align-items-center">
+        <div className="d-flex flex-column justify-content-center align-items-center">
           <img src={logo} alt="logo" className="m-0 p-0" />
+          <h1>The Mock Bank</h1>
         </div>
       </div>
     </div>

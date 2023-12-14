@@ -67,7 +67,7 @@ export default function CustomerCardRequests() {
           <CustomerNewCardRequest />
         </Dialog>
       </div>
-      <DataTable value={cardRequests}>
+      <DataTable value={cardRequests} scrollable scrollHeight="600px">
         <Column field="cardName" header="Card name"></Column>
         <Column field="cardLimit" header="Limit"></Column>
         <Column

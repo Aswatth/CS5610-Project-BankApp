@@ -47,7 +47,12 @@ export default function EmployeeCreatedAppointments() {
           showWeek
           className="me-3"
         />
-        <DataTable value={availableAppointments} className="flex-fill">
+        <DataTable
+          value={availableAppointments}
+          className="flex-fill"
+          scrollable
+          scrollHeight="400px"
+        >
           <Column field="date" header="Date"></Column>
           <Column field="startTime" header="Start time"></Column>
           <Column field="endTime" header="End time"></Column>

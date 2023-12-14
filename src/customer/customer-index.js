@@ -21,7 +21,7 @@ import * as customerClient from "../clients/customer-client";
 export default function CustomerPage() {
   const navigate = useNavigate();
   const { pathname } = useLocation();
-  const options = [
+  const [options, setOptions] = useState([
     {
       name: "Profile",
       icon: "pi pi-user",
@@ -81,7 +81,7 @@ export default function CustomerPage() {
       icon: "pi pi-sign-out",
       component: <Card className="flex-fill">Logout</Card>,
     },
-  ];
+  ]);
 
   const [profile, setProfile] = useState({});
 
@@ -89,6 +89,17 @@ export default function CustomerPage() {
     customerClient.getProfile().then((response) => {
       if (response.status == 200) {
         setProfile(response.data);
+        if (response.data.accounts == null && response.data.cards == null) {
+          let updatedOptions = options;
+          updatedOptions = updatedOptions.filter(
+            (f) =>
+              f.name == "Profile" ||
+              f.name == "Appointments" ||
+              f.name == "Log out"
+          );
+          setOptions(updatedOptions);
+          navigate("/customer/appointments");
+        }
       }
     });
   }, []);
