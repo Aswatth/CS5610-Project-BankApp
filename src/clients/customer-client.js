@@ -159,7 +159,6 @@ export const viewCardRequests = async () => {
 
 export const getProfile = async () => {
   let token = Cookies.get("bank-app-token");
-  console(getCustomerId());
   if (token) {
     const response = await axios.get(
       API + `/customer?customerId=${getCustomerId()}`,
@@ -169,7 +168,6 @@ export const getProfile = async () => {
         },
       }
     );
-    console.log(response.data);
     return response;
   } else {
     return null;

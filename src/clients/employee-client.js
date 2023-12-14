@@ -34,6 +34,20 @@ export const getAssignedAppointments = async () => {
   }
 };
 
+export const viewCustomers = async () => {
+  let token = Cookies.get("bank-app-token");
+  if (token) {
+    const response = await axios.get(API + "/customers", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response;
+  } else {
+    return null;
+  }
+};
+
 export const viewCardRequests = async () => {
   let token = Cookies.get("bank-app-token");
   if (token) {
