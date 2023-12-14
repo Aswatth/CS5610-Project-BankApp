@@ -15,6 +15,20 @@ export const register = async (customerData) => {
   return response.status;
 };
 
+export const updateProfile = async (customerData) => {
+  let token = Cookies.get("bank-app-token");
+  if (token) {
+    const response = await axios.put(API + "/updateProfile", customerData, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response;
+  } else {
+    return null;
+  }
+};
+
 export const getAccounts = async () => {
   let token = Cookies.get("bank-app-token");
   if (token) {

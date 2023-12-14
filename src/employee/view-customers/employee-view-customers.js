@@ -4,11 +4,16 @@ import { useEffect, useState } from "react";
 import * as employeeClient from "../../clients/employee-client";
 import { Button } from "primereact/button";
 import { Dialog } from "primereact/dialog";
+import { Tag } from "primereact/tag";
 
 export default function EmployeeViewCustomers() {
   const [customers, setCustomers] = useState([]);
   const [selectedCustomer, setCustomer] = useState(null);
   const [showMore, toggleShowMore] = useState(false);
+
+  //Transactions
+  const [showTransactions, toggleTransactions] = useState(false);
+  const [transactionList, setTransactionList] = useState([]);
 
   useEffect(() => {
     employeeClient.viewCustomers().then((response) => {
@@ -51,12 +56,23 @@ export default function EmployeeViewCustomers() {
   const viewMoreTemplate = (row) => {
     if (selectedCustomer && selectedCustomer.customerId == row.customerId) {
       return (
-        <Button
-          label="View more"
-          icon="pi pi-info-circle"
-          className="color-2 border rounded"
-          onClick={() => toggleShowMore(true)}
-        ></Button>
+        <div>
+          <Button
+            label="Account info"
+            icon="pi pi-info-circle"
+            className="color-2 border rounded"
+            onClick={() => toggleShowMore(true)}
+          ></Button>
+          <Button
+            label="Transactions"
+            icon="pi pi-info-circle"
+            className="color-2 border rounded"
+            onClick={() => {
+              toggleTransactions(true);
+              getTransactions();
+            }}
+          ></Button>
+        </div>
       );
     }
   };
@@ -112,6 +128,51 @@ export default function EmployeeViewCustomers() {
     );
   };
 
+  const getTransactions = () => {
+    employeeClient
+      .viewCustomerTransactions(selectedCustomer.customerId)
+      .then((response) => {
+        if (response.status == 200) {
+          setTransactionList(response.data);
+        }
+      });
+  };
+
+  const transactionsTemplate = () => {
+    if (selectedCustomer) {
+      return (
+        <div>
+          <DataTable value={transactionList}>
+            <Column field="transactionDate" header="Date"></Column>
+            <Column field="senderAccount" header="From"></Column>
+            <Column field="receiverAccount" header="To"></Column>
+            <Column
+              field="amount"
+              header="Amount"
+              body={(row) => {
+                if (
+                  selectedCustomer.accounts.find(
+                    (f) => f.accountNumber == row.senderAccount
+                  )
+                ) {
+                  return (
+                    <Tag severity="danger">- ${row.amount.toFixed(2)}</Tag>
+                  );
+                } else {
+                  return (
+                    <Tag severity="success">+ ${row.amount.toFixed(2)}</Tag>
+                  );
+                }
+              }}
+            ></Column>
+          </DataTable>
+        </div>
+      );
+    }
+
+    return <div>No transactions</div>;
+  };
+
   return (
     <div>
       <Dialog
@@ -120,6 +181,13 @@ export default function EmployeeViewCustomers() {
         header="More info"
       >
         {moreInfoTemplate()}
+      </Dialog>
+      <Dialog
+        visible={showTransactions}
+        onHide={() => toggleTransactions(false)}
+        header="Transactions"
+      >
+        {transactionsTemplate()}
       </Dialog>
       <DataTable
         value={customers}

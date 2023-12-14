@@ -35,22 +35,37 @@ export default function EmployeeViewAppointments({ hasCreateCusomterAccess }) {
   };
 
   const handleAppointment = () => {
-    if (
-      selectedAppointment.purpose.toLowerCase().replaceAll(" ", "-") ==
-      "new-account-creation"
-    ) {
-      setCreateCustomerVisibilty(true);
-    } else {
-      markAppointmentAsCompleted();
-    }
+    setCreateCustomerVisibilty(true);
+    markAppointmentAsCompleted();
+    // if (
+    //   selectedAppointment.purpose.toLowerCase().replaceAll(" ", "-") ==
+    //   "new-account-creation"
+    // ) {
+    //   setCreateCustomerVisibilty(true);
+    // } else {
+    //   markAppointmentAsCompleted();
+    // }
   };
 
   const createCustomerUI = () => {
-    return (
-      <div>
-        <EmploayeeCreateCustomer />
-      </div>
-    );
+    if (selectedAppointment) {
+      let customerData = {
+        customerId: selectedAppointment.customer.customerId,
+        appointmentId: selectedAppointment.id,
+        firstName: selectedAppointment.customer.firstName,
+        lastName: selectedAppointment.customer.lastName,
+        email: selectedAppointment.customer.email,
+        phone: selectedAppointment.customer.phone,
+        address: selectedAppointment.customer.address,
+        username: selectedAppointment.customer.username,
+        branch: selectedAppointment.branch,
+      };
+      return (
+        <div>
+          <EmploayeeCreateCustomer customerData={customerData} />
+        </div>
+      );
+    }
   };
 
   function compareDate(d1, d2) {
@@ -64,32 +79,39 @@ export default function EmployeeViewAppointments({ hasCreateCusomterAccess }) {
   }
   const actionTemplate = (rowData) => {
     if (selectedAppointment && rowData.id == selectedAppointment.id) {
-      if (rowData.status == "Pending") {
-        return (
-          <Button
-            label={
-              rowData.purpose.toLowerCase() == "query"
-                ? "Address query"
-                : "Create new customer account"
-            }
-            className="color-2 border rounded"
-            onClick={handleAppointment}
-          ></Button>
-        );
-      } else if (rowData.status.toLowerCase() == "completed") {
-        return <Tag severity="success">Completed</Tag>;
-      } else {
-        return <Tag severity="info">Available</Tag>;
+      switch (selectedAppointment.status) {
+        case "Scheduled":
+          let date = new Date(selectedAppointment.date);
+          date.setDate(date.getDate() + 1);
+          if (compareDate(new Date(), date))
+            return (
+              <Button
+                label={
+                  rowData.description.toLowerCase() == "query"
+                    ? "Address query"
+                    : "Create new customer account"
+                }
+                className="color-2 border rounded"
+                onClick={handleAppointment}
+              ></Button>
+            );
+          else {
+            return <Tag severity="info">Scheduled</Tag>;
+          }
+        case "Completed":
+          return <Tag severity="success">Completed</Tag>;
+        case "Available":
+          return <Tag severity="info">Available</Tag>;
       }
-    } else if (rowData.status.toLowerCase() == "completed") {
-      return <Tag severity="success">Completed</Tag>;
-    } else if (
-      rowData.status.toLowerCase() == "scheduled" &&
-      compareDate(new Date(rowData.date), new Date())
-    ) {
-      return <Tag severity="warning">Pending</Tag>;
-    } else {
-      return <Tag severity="info">Available</Tag>;
+    } else if (rowData.id) {
+      switch (rowData.status) {
+        case "Scheduled":
+          return <Tag severity="info">Scheduled</Tag>;
+        case "Completed":
+          return <Tag severity="success">Completed</Tag>;
+        case "Available":
+          return <Tag severity="info">Available</Tag>;
+      }
     }
   };
   return (
@@ -124,18 +146,28 @@ export default function EmployeeViewAppointments({ hasCreateCusomterAccess }) {
         {createCustomerUI()}
       </Dialog>
       <DataTable
-        value={appointmentsToDisplay}
+        value={appointmentsToDisplay.filter((f) => f.customer.customerId != 0)}
         // scrollHeight="350px"
         selectionMode="single"
         selection={selectedAppointment}
         onSelectionChange={(e) => setSelectedAppointment(e.value)}
       >
-        <Column field="startTime" header="Start Time"></Column>
-        <Column field="endTime" header="End Time"></Column>
-        <Column field="firstName" header="First name"></Column>
-        <Column field="lastName" header="Last name"></Column>
-        <Column field="email" header="Email"></Column>
-        <Column field="mobile" header="Mobile"></Column>
+        <Column field="date" header="Date"></Column>
+        <Column
+          field=""
+          header="Time"
+          body={(row) => {
+            return (
+              <div>
+                {row.startTime} <br></br> {row.endTime}
+              </div>
+            );
+          }}
+        ></Column>
+        <Column field="customer.firstName" header="First name"></Column>
+        <Column field="customer.lastName" header="Last name"></Column>
+        <Column field="customer.email" header="Email"></Column>
+        <Column field="customer.phone" header="Phone"></Column>
         <Column field="branch" header="Branch"></Column>
         <Column field="description" header="Purpose"></Column>
         <Column header="Status" body={actionTemplate}></Column>

@@ -96,11 +96,21 @@ export default function CustomerSendMoney() {
               "-" +
               date.getDate(),
           });
-          // customerClient.sendMoney(transferDetails).then((resposne) => {
-          //   if (resposne.status == 200) {
-          //     navigate("/customer/home");
-          //   }
-          // });
+          let details = {
+            ...transferDetails,
+            senderAccount: selectedAccount.accountNumber,
+            transactionDate:
+              date.getFullYear() +
+              "-" +
+              (date.getMonth() + 1) +
+              "-" +
+              date.getDate(),
+          };
+          customerClient.sendMoney(details).then((resposne) => {
+            if (resposne.status == 200) {
+              navigate("/customer/home");
+            }
+          });
         }}
       ></Button>
     </div>

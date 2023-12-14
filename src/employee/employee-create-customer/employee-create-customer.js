@@ -4,8 +4,10 @@ import { Column } from "primereact/column";
 import { DataTable } from "primereact/datatable";
 import { useRef, useState } from "react";
 import { useNavigate } from "react-router";
+import * as employeeClient from "../../clients/employee-client";
+import { data } from "@maptiler/sdk";
 
-export default function EmploayeeCreateCustomer() {
+export default function EmploayeeCreateCustomer({ customerData }) {
   const toast = useRef(null);
   const navigate = useNavigate();
 
@@ -13,12 +15,14 @@ export default function EmploayeeCreateCustomer() {
 
   const accountTypes = ["Checkings", "Savings"];
   const [selectedAccount, setSelectedAccount] = useState(accountTypes[0]);
+
   const [initialBalance, setInitialBalance] = useState(0);
 
   const [showAccountCreation, toggleAccountCreation] = useState(false);
 
+  const [customerDataToSave, setCustomerDataToSave] = useState({});
+
   const accountCreationTemplate = () => {
-    console.log(showAccountCreation);
     if (showAccountCreation)
       return (
         <div className="d-flex flex-column">
@@ -52,7 +56,7 @@ export default function EmploayeeCreateCustomer() {
                   ...accounts,
                   {
                     accountType: selectedAccount,
-                    accountBalance: initialBalance,
+                    accountBalance: +initialBalance,
                   },
                 ]);
 
@@ -93,44 +97,6 @@ export default function EmploayeeCreateCustomer() {
   return (
     <div className="d-flex flex-column justify-content-between">
       <Toast ref={toast} />
-      <div className="mb-2">
-        <label htmlFor="fname" className="form-label">
-          First name
-        </label>
-        <input id="fname" type="text" className="form-control"></input>
-      </div>
-      <div className="mb-2">
-        <label htmlFor="lname" className="form-label">
-          Last name
-        </label>
-        <input id="lname" type="text" className="form-control"></input>
-      </div>
-      <div className="mb-2">
-        <label htmlFor="email" className="form-label">
-          Email
-        </label>
-        <input id="email" type="email" className="form-control"></input>
-      </div>
-      <div className="mb-2">
-        <label htmlFor="phone" className="form-label">
-          Phone
-        </label>
-        <input id="phone" type="number" className="form-control"></input>
-      </div>
-      <div className="mb-2">
-        <label htmlFor="address" className="form-label">
-          Address
-        </label>
-        <input id="address" type="text" className="form-control"></input>
-      </div>
-      <div className="mb-2">
-        <label htmlFor="branch" className="form-label">
-          Branch
-        </label>
-        <select className="form-select" disabled="true">
-          <option>BRANCH 1</option>
-        </select>
-      </div>
       <div className="d-fle mb-2">
         <Button
           label="Add an account"
@@ -140,11 +106,68 @@ export default function EmploayeeCreateCustomer() {
       </div>
       {accountCreationTemplate()}
       {accountTemplate()}
-      <div className="mb-2">
-        <label htmlFor="pin" className="form-label">
-          PIN for the debit card
+      {/* <div className="mb-2">
+        <label htmlFor="fname" className="form-label">
+          First name
         </label>
-        <input id="pin" className="form-control" type="password"></input>
+        <input
+          id="fname"
+          type="text"
+          value={customerData.firstName}
+          className="form-control"
+        ></input>
+      </div>
+      <div className="mb-2">
+        <label htmlFor="lname" className="form-label">
+          Last name
+        </label>
+        <input
+          id="lname"
+          type="text"
+          value={customerData.lastName}
+          className="form-control"
+        ></input>
+      </div>
+      <div className="mb-2">
+        <label htmlFor="email" className="form-label">
+          Email
+        </label>
+        <input
+          id="email"
+          type="email"
+          value={customerData.email}
+          className="form-control"
+        ></input>
+      </div>
+      <div className="mb-2">
+        <label htmlFor="phone" className="form-label">
+          Phone
+        </label>
+        <input
+          id="phone"
+          type="number"
+          value={customerData.phone}
+          className="form-control"
+        ></input>
+      </div>
+      <div className="mb-2">
+        <label htmlFor="address" className="form-label">
+          Address
+        </label>
+        <input
+          id="address"
+          type="text"
+          className="form-control"
+          value={customerData.address}
+        ></input>
+      </div>
+      <div className="mb-2">
+        <label htmlFor="branch" className="form-label">
+          Branch
+        </label>
+        <select className="form-select" disabled="true">
+          <option value={customerData.branch}>{customerData.branch}</option>
+        </select>
       </div>
       <div className="mb-2">
         <label htmlFor="username" className="form-label">
@@ -155,6 +178,7 @@ export default function EmploayeeCreateCustomer() {
           className="form-control"
           type="text"
           placeholder="This will be pre-filled and can be edited"
+          value={customerData.username}
         ></input>
       </div>
       <div className="mb-2">
@@ -162,7 +186,7 @@ export default function EmploayeeCreateCustomer() {
           Password
         </label>
         <input id="password" className="form-control" type="password"></input>
-      </div>
+      </div> */}
       <Button
         label="Create"
         severity="primary"
@@ -174,8 +198,19 @@ export default function EmploayeeCreateCustomer() {
               detail: `Must have atleast one type of account setup`,
             });
           } else {
-            //Handle user creation with backend - refresh page after getting 200 from server
-            navigate(0);
+            let dataToSave = {
+              appointmentId: customerData.appointmentId,
+              customerId: customerData.customerId,
+              accounts: accounts,
+              cardNetwork: "VISA",
+            };
+            employeeClient
+              .createCustomerAccount(dataToSave)
+              .then((response) => {
+                if (response.status == 200 || response.status == 201) {
+                  navigate(0);
+                }
+              });
           }
         }}
       ></Button>

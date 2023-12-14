@@ -48,6 +48,37 @@ export const viewCustomers = async () => {
   }
 };
 
+export const viewCustomerTransactions = async (customerId) => {
+  let token = Cookies.get("bank-app-token");
+  if (token) {
+    const response = await axios.get(
+      API + `/customerTransactionsByEmployee/${customerId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return response;
+  } else {
+    return null;
+  }
+};
+
+export const createCustomerAccount = async (customerData) => {
+  let token = Cookies.get("bank-app-token");
+  if (token) {
+    const response = await axios.post(API + "/createCustomer", customerData, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response;
+  } else {
+    return null;
+  }
+};
+
 export const viewCardRequests = async () => {
   let token = Cookies.get("bank-app-token");
   if (token) {

@@ -4,10 +4,13 @@ import { DataTable } from "primereact/datatable";
 import { useEffect, useState } from "react";
 import * as customerClient from "../../clients/customer-client";
 import { useNavigate } from "react-router";
+import { Tag } from "primereact/tag";
 
 export default function CustomerTransactions() {
   const navigate = useNavigate();
   const [transactionList, setTransactionList] = useState([]);
+
+  const [accountList, setAccounts] = useState([]);
 
   useEffect(() => {
     customerClient.getTransactions().then((response) => {
@@ -17,23 +20,32 @@ export default function CustomerTransactions() {
       }
       if (response.status == 200 || response.status == 201) {
         setTransactionList(response.data);
+
+        customerClient.getAccounts().then((response) => {
+          if (response.status == 200) {
+            setAccounts(response.data);
+          }
+        });
       }
     });
-  }, [transactionList]);
+  }, []);
 
+  const amountTemplate = (row) => {
+    if (accountList.find((f) => f.accountNumber == row.senderAccount)) {
+      return <Tag severity="danger">- ${row.amount.toFixed(2)}</Tag>;
+    } else {
+      return <Tag severity="success">+ ${row.amount.toFixed(2)}</Tag>;
+    }
+  };
   const generatePDF = () => {
     import("jspdf").then((jsPDF) => {
       import("jspdf-autotable").then(() => {
         const doc = new jsPDF.default(0, 0);
 
         const exportColumns = [
-          { title: "Transaction type", dataKey: "transactionType" },
-          { title: "Receiver account", dataKey: "to" },
-          { title: "Account name", dataKey: "from[name]" },
-          {
-            title: "Account number",
-            dataKey: "number",
-          },
+          { title: "Date", dataKey: "transactionDate" },
+          { title: "Sender account", dataKey: "senderAccount" },
+          { title: "Receiver account", dataKey: "receiverAccount" },
           { title: "Amount", dataKey: "amount" },
         ];
 
@@ -60,11 +72,10 @@ export default function CustomerTransactions() {
         </div>
       </div>
       <DataTable value={transactionList}>
-        <Column field="transactionType" header="Transaction type"></Column>
-        <Column field="from.name" header="Account name"></Column>
-        <Column field="from.number" header="Account number"></Column>
-        <Column field="to" header="Receiving account number"></Column>
-        <Column field="amount" header="Amount"></Column>
+        <Column field="transactionDate" header="Date"></Column>
+        <Column field="senderAccount" header="From"></Column>
+        <Column field="receiverAccount" header="To"></Column>
+        <Column field="amount" header="Amount" body={amountTemplate}></Column>
       </DataTable>
     </div>
   );

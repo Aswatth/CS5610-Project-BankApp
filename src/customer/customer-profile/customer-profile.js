@@ -16,13 +16,32 @@ export default function CustomerProfile() {
       return;
     }
     customerClient.getProfile().then((response) => {
-      setCustomerData(response.data);
+      let data = response.data;
+      setCustomerData({
+        customerId: data.customerId,
+        firstName: data.firstName,
+        lastName: data.lastName,
+        email: data.email,
+        phone: data.phone,
+        dateOfBirth: data.dateOfBirth,
+        address: data.address,
+        username: data.username,
+        password: data.password,
+      });
     });
-  }, [customerData]);
+  }, []);
 
   return (
     <div className="d-flex flex-column">
-      <Button icon="pi pi-pencil" onClick={() => setDisabled(false)}></Button>
+      <Button
+        icon={disabled ? "pi pi-pencil" : "pi pi-save"}
+        onClick={() => {
+          if (!disabled) {
+            customerClient.updateProfile(customerData);
+          }
+          setDisabled(false);
+        }}
+      ></Button>
       <label htmlFor="firstName">First name:</label>
       <InputText
         value={customerData.firstName}
