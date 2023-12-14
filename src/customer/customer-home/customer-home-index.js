@@ -143,7 +143,9 @@ export default function CustomerHome() {
                   }}
                   onClick={() => {
                     updateCurrentCardIndex(
-                      (currentCardIndex - 1) % cardList.length
+                      currentCardIndex != 0
+                        ? (currentCardIndex - 1) % cardList.length
+                        : cardList.length - 1
                     );
                   }}
                   className="flex-fill"

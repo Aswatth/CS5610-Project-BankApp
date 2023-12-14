@@ -96,8 +96,12 @@ export default function CustomerCard({ cardWidth, cardHeight, cardData }) {
           <div
             class="customer-card-front"
             style={{
-              backgroundImage: `var(--${cardData.cardType.toLowerCase()}-card-front)`,
-              color: `var(--${cardData.cardType.toLowerCase()}-card-text)`,
+              backgroundImage: `var(--${cardData.cardName
+                .replace(" ", "-")
+                .toLowerCase()}-card-front)`,
+              color: `var(--${cardData.cardName
+                .replace(" ", "-")
+                .toLowerCase()}-card-text)`,
             }}
           >
             {cardFrontContent()}
@@ -105,8 +109,13 @@ export default function CustomerCard({ cardWidth, cardHeight, cardData }) {
           <div
             class="customer-card-back"
             style={{
-              backgroundImage: `var(--${cardData.cardType.toLowerCase()}-card-back)`,
-              color: `var(--${cardData.cardType.toLowerCase()}-card-text)`,
+              backgroundImage: `var(--${cardData.cardName
+                .replace(" ", "-")
+                .toLowerCase()}-card-back)`,
+              color: `var(--${cardData.cardName.toLowerCase(
+                " ",
+                "-"
+              )}-card-text)`,
             }}
           >
             {cardBackContent()}

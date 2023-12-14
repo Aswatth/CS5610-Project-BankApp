@@ -21,15 +21,57 @@ export const createNewAppointment = async (appointmentData) => {
 };
 
 export const getAssignedAppointments = async () => {
-  const response = await axios.get(API + "/employee/viewAppointments", {
-    headers: {
-      Authorization: `Bearer ${Cookies.get("bank-app-token")}`,
-    },
-  });
-  return response;
+  let token = Cookies.get("bank-app-token");
+  if (token) {
+    const response = await axios.get(API + "/employee/viewAppointments", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response;
+  } else {
+    return null;
+  }
+};
+
+export const viewCardRequests = async () => {
+  let token = Cookies.get("bank-app-token");
+  if (token) {
+    const response = await axios.get(API + "/viewCardRequests", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response;
+  } else {
+    return null;
+  }
+};
+
+export const approveOrRejectCardRequest = async (data) => {
+  let token = Cookies.get("bank-app-token");
+  if (token) {
+    const response = await axios.post(
+      API + "/approveOrRejectCardRequest",
+      data,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return response;
+  } else {
+    return null;
+  }
 };
 
 export const getEmployeeId = () => {
   let token = Cookies.get("bank-app-token");
   return jwtDecode(token)["user_type_id"];
+};
+
+export const isEmployee = () => {
+  let token = Cookies.get("bank-app-token");
+  return token ? jwtDecode(token)["user_type"] == "employee" : false;
 };

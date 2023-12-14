@@ -104,7 +104,7 @@ export const cancelAppointment = async (appointmentIdToDelete) => {
   if (token) {
     const response = await axios.post(
       API + `/cancelAppointment?id=${appointmentIdToDelete}`,
-      "",
+      {},
       {
         headers: {
           Authorization: `Bearer ${token}`,

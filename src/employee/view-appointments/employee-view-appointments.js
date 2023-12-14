@@ -19,8 +19,9 @@ export default function EmployeeViewAppointments({ hasCreateCusomterAccess }) {
 
   useEffect(() => {
     employeeClient.getAssignedAppointments().then((response) => {
-      console.log(response.data);
-      setAppointmentsToDisplay(response.data);
+      if (response.status == 200) {
+        setAppointmentsToDisplay(response.data);
+      }
     });
   }, []);
 
