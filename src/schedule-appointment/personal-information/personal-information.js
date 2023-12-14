@@ -53,13 +53,17 @@ export default function PersonalInformation() {
           <i className="pi pi-user"></i>
         </span>
         <InputText
+          //value={customerData.firstName}
           placeholder="First name"
+          required
           onChange={(c) =>
             setCustomerData({ ...customerData, firstName: c.target.value })
           }
         />
         <InputText
+          //value={customerData.lastName}
           placeholder="Last name"
+          required
           onChange={(c) =>
             setCustomerData({ ...customerData, lastName: c.target.value })
           }
@@ -70,8 +74,9 @@ export default function PersonalInformation() {
           <i className="pi pi-calendar"></i>
         </span>
         <Calendar
-          //   value={date}
+          //value={new Date(customerData.dateOfBirth)}
           placeholder="Date of birth"
+          required
           onChange={(c) =>
             setCustomerData({
               ...customerData,
@@ -93,22 +98,32 @@ export default function PersonalInformation() {
           <i className="pi pi-home"></i>
         </span>
         <InputText
+          //value={address1}
+          required
           placeholder="Address line 1"
           onChange={(c) => setAddress1(c.target.value)}
         />
         <InputText
+          //value={address2}
+          required
           placeholder="Address line 2"
           onChange={(c) => setAddress2(c.target.value)}
         />
         <InputText
+          //value={city}
+          required
           placeholder="City"
           onChange={(c) => setCity(c.target.value)}
         />
         <InputText
+          //value={state}
+          required
           placeholder="State"
           onChange={(c) => setState(c.target.value)}
         />
         <InputText
+          //value={zip}
+          required
           placeholder="Zip code"
           onChange={(c) => setZip(c.target.value)}
         />
@@ -116,6 +131,8 @@ export default function PersonalInformation() {
       <div className="p-inputgroup mb-2">
         <span className="p-inputgroup-addon">@</span>
         <InputText
+          //value={customerData.email}
+          required
           placeholder="Emaild Id"
           onChange={(c) =>
             setCustomerData({ ...customerData, email: c.target.value })
@@ -127,6 +144,8 @@ export default function PersonalInformation() {
           <i className="pi pi-phone"></i>
         </span>
         <InputMask
+          //value={customerData.phone}
+          required
           onChange={(c) =>
             setCustomerData({ ...customerData, phone: c.target.value })
           }
@@ -139,12 +158,16 @@ export default function PersonalInformation() {
           <i className="pi pi-user"></i>
         </span>
         <InputText
+          //value={customerData.username}
+          required
           placeholder="Username"
           onChange={(c) =>
             setCustomerData({ ...customerData, username: c.target.value })
           }
         />
         <InputText
+          //value={customerData.password}
+          required
           placeholder="Password"
           type="password"
           onChange={(c) =>

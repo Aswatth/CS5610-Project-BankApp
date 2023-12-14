@@ -5,7 +5,7 @@ import { Column } from "primereact/column";
 import { Button } from "primereact/button";
 import "./schedule-appointment-index.css";
 import PickLocation from "./pick-location/pick-location-index";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import PickDateTime from "./pick-date-time/pick-date-time-index";
 import PersonalInformation from "./personal-information/personal-information";
 import { useSelector } from "react-redux";
@@ -13,8 +13,10 @@ import ReviewAndSubmitAppoinment from "./review-submit/review-submit";
 import * as appointmentClient from "../clients/appointment-client";
 import * as customerClient from "../clients/customer-client";
 import { useNavigate } from "react-router";
+import { Toast } from "primereact/toast";
 
 export default function ScheduleAppointment() {
+  const toast = useRef(null);
   const navigate = useNavigate();
   const [activeIndex, setActiveIndex] = useState(0);
   // const [scheduleContent, setScheduleContent] = useState();
@@ -154,51 +156,174 @@ export default function ScheduleAppointment() {
     }
   };
 
+  const handleSubmit = () => {
+    {
+      if (stepsToDisplay[activeIndex].label != "Review and submit") {
+        setNextDisable(true);
+        setActiveIndex((activeIndex + 1) % steps.length);
+      } else {
+        if (customerClient.isCustomer()) {
+          if (jointCustomers) {
+            appointmentClient
+              .scheduleJointAppointment(appointmentId, jointCustomers)
+              .then((response) => {
+                if (response.status == 200 || response.status == 201) {
+                  toast.current.show({
+                    severity: "success",
+                    summary: "Appointment created",
+                    detail: `Successfully scheduled an appointment on ${date}`,
+                    life: 3000,
+                  });
+                  navigate("/customer/appointments");
+                }
+              });
+          } else {
+            appointmentClient
+              .ScheduleAppointment(
+                appointmentId,
+                null,
+                customerClient.getCustomerId(),
+                purpose
+              )
+              .then((response) => {
+                if (response.status == 200 || response.status == 201) {
+                  toast.current.show({
+                    severity: "success",
+                    summary: "Appointment created",
+                    detail: `Successfully scheduled an appointment on ${date}`,
+                    life: 3000,
+                  });
+                  navigate("/customer/appointments");
+                }
+              });
+          }
+        } else {
+          appointmentClient
+            .ScheduleAppointment(appointmentId, customerInfo, null, purpose)
+            .then((response) => {
+              if (response.status == 200 || response.status == 201) {
+                toast.current.show({
+                  severity: "success",
+                  summary: "Appointment created",
+                  detail: `Successfully scheduled an appointment on ${date}`,
+                  life: 3000,
+                });
+                navigate("/login");
+              }
+            });
+        }
+
+        // setNextDisable(false);
+      }
+    }
+  };
+
   return (
-    <div className="color-1 vh-100 d-flex flex-column p-2">
-      <Card className="schedule-step mb-2">
-        <h3 className="">Schedule an appointment</h3>
-        <Steps model={stepsToDisplay} activeIndex={activeIndex}></Steps>
-      </Card>
-      <Card className="schedule-step-content flex-fill">
-        <div className="d-flex">
-          {previousButtonTemplate()}
-          <div className="flex-fill d-flex justify-content-end">
-            <Button
-              label={
-                stepsToDisplay[activeIndex].label == "Review and submit"
-                  ? "Submit"
-                  : "Next"
-              }
-              className={
-                (stepsToDisplay[activeIndex].label != "Review and submit"
-                  ? "color-2 "
-                  : "") + "border rounded "
-              }
-              severity={
-                stepsToDisplay[activeIndex].label == "Review and submit"
-                  ? "success"
-                  : ""
-              }
-              disabled={isNextDisabled}
-              onClick={() => {
-                if (stepsToDisplay[activeIndex].label != "Review and submit") {
-                  setNextDisable(true);
-                  setActiveIndex((activeIndex + 1) % steps.length);
-                } else {
-                  if (customerClient.isCustomer()) {
-                    if (jointCustomers) {
-                      appointmentClient
-                        .scheduleJointAppointment(appointmentId, jointCustomers)
-                        .then((response) => {
-                          navigate("/customer/appointments");
-                        });
+    <div>
+      <Toast ref={toast} />
+      {/* For big screens */}
+      <div className="color-1 vh-100 d-flex flex-column p-2 d-none d-lg-block">
+        <Card className="schedule-step mb-2">
+          <h3 className="">Schedule an appointment</h3>
+          <form onSubmit={handleSubmit}>
+            <Steps model={stepsToDisplay} activeIndex={activeIndex}></Steps>
+          </form>
+        </Card>
+        <Card className="schedule-step-content flex-fill">
+          <div className="d-flex">
+            {previousButtonTemplate()}
+            <div className="flex-fill d-flex justify-content-end">
+              <Button
+                type="submit"
+                label={
+                  stepsToDisplay[activeIndex].label == "Review and submit"
+                    ? "Submit"
+                    : "Next"
+                }
+                className={
+                  (stepsToDisplay[activeIndex].label != "Review and submit"
+                    ? "color-2 "
+                    : "") + "border rounded "
+                }
+                severity={
+                  stepsToDisplay[activeIndex].label == "Review and submit"
+                    ? "success"
+                    : ""
+                }
+                disabled={isNextDisabled}
+              ></Button>
+            </div>
+          </div>
+          {stepsToDisplay[activeIndex].component}
+        </Card>
+      </div>
+      {/* For smaller screens */}
+      <div className="color-1 vh-100 d-flex flex-column p-2 d-lg-none">
+        <Card className="schedule-step mb-2">
+          <h3 className="">Schedule an appointment</h3>
+          <Steps model={stepsToDisplay} activeIndex={activeIndex}></Steps>
+        </Card>
+        <Card className="schedule-step-content flex-fill">
+          <div className="d-flex">
+            {previousButtonTemplate()}
+            <div className="flex-fill d-flex justify-content-end">
+              <Button
+                label={
+                  stepsToDisplay[activeIndex].label == "Review and submit"
+                    ? "Submit"
+                    : "Next"
+                }
+                className={
+                  (stepsToDisplay[activeIndex].label != "Review and submit"
+                    ? "color-2 "
+                    : "") + "border rounded "
+                }
+                severity={
+                  stepsToDisplay[activeIndex].label == "Review and submit"
+                    ? "success"
+                    : ""
+                }
+                disabled={isNextDisabled}
+                onClick={() => {
+                  if (
+                    stepsToDisplay[activeIndex].label != "Review and submit"
+                  ) {
+                    setNextDisable(true);
+                    setActiveIndex((activeIndex + 1) % steps.length);
+                  } else {
+                    if (customerClient.isCustomer()) {
+                      if (jointCustomers) {
+                        appointmentClient
+                          .scheduleJointAppointment(
+                            appointmentId,
+                            jointCustomers
+                          )
+                          .then((response) => {
+                            navigate("/customer/appointments");
+                          });
+                      } else {
+                        appointmentClient
+                          .ScheduleAppointment(
+                            appointmentId,
+                            null,
+                            customerClient.getCustomerId(),
+                            purpose
+                          )
+                          .then((response) => {
+                            if (
+                              response.status == 200 ||
+                              response.status == 201
+                            ) {
+                              navigate("/customer/appointments");
+                            }
+                          });
+                      }
                     } else {
                       appointmentClient
                         .ScheduleAppointment(
                           appointmentId,
+                          customerInfo,
                           null,
-                          customerClient.getCustomerId(),
                           purpose
                         )
                         .then((response) => {
@@ -206,33 +331,20 @@ export default function ScheduleAppointment() {
                             response.status == 200 ||
                             response.status == 201
                           ) {
-                            navigate("/customer/appointments");
+                            navigate("/login");
                           }
                         });
                     }
-                  } else {
-                    appointmentClient
-                      .ScheduleAppointment(
-                        appointmentId,
-                        customerInfo,
-                        null,
-                        purpose
-                      )
-                      .then((response) => {
-                        if (response.status == 200 || response.status == 201) {
-                          navigate("/login");
-                        }
-                      });
-                  }
 
-                  // setNextDisable(false);
-                }
-              }}
-            ></Button>
+                    // setNextDisable(false);
+                  }
+                }}
+              ></Button>
+            </div>
           </div>
-        </div>
-        {stepsToDisplay[activeIndex].component}
-      </Card>
+          {stepsToDisplay[activeIndex].component}
+        </Card>
+      </div>
     </div>
   );
 }

@@ -2,7 +2,7 @@ import { Calendar } from "primereact/calendar";
 import { Column } from "primereact/column";
 import { DataTable } from "primereact/datatable";
 import * as employeeClient from "../../clients/employee-client";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import * as bookAppointmentReducer from "../../reducers/book-appointment-reducer";
 import { isCustomer, getProfile } from "../../clients/customer-client";
@@ -11,18 +11,17 @@ import { Button } from "primereact/button";
 import { Dialog } from "primereact/dialog";
 import { InputText } from "primereact/inputtext";
 import { InputMask } from "primereact/inputmask";
+import { Toast } from "primereact/toast";
 
 export default function PickDateTime() {
+  const toast = useRef(null);
   const dispatch = useDispatch();
-  const branch = useSelector(
-    (state) => state.bookAppointmentReducer.selectedBranch
-  );
   const [date, setDate] = useState(new Date());
   const [availableAppointments, setAvailableAppointments] = useState([]);
   const [selectedAppointment, setSelectedAppointment] = useState({});
 
   const [purposes, setPurposes] = useState(["Query", "New account"]);
-  const [selectedPurpose, setSelectedPurpose] = useState("");
+  const [selectedPurpose, setSelectedPurpose] = useState("Query");
 
   //Joint account
   const [showJointAccountPopUp, toggleJointAccountPopUp] = useState(false);
@@ -40,6 +39,7 @@ export default function PickDateTime() {
   }
 
   useEffect(() => {
+    dispatch(bookAppointmentReducer.setPurpose(selectedPurpose));
     employeeClient
       .getCreatedAppointments(formatDateYYYYMMDD(date))
       .then((response) => {
@@ -48,10 +48,19 @@ export default function PickDateTime() {
         setAvailableAppointments(response.data);
       });
 
-    if (isCustomer) {
+    if (isCustomer && !purposes.find((f) => "Joint account")) {
       setPurposes([...purposes, "Joint account"]);
     }
-  }, [date]);
+
+    if (!selectedAppointment) {
+      toast.current.show({
+        severity: "error",
+        summary: "Error",
+        detail: "Message Content",
+        life: 3000,
+      });
+    }
+  }, [date, selectedAppointment]);
 
   const jointAccountTemplate = () => {
     if (selectedPurpose == "Joint account")
@@ -76,6 +85,7 @@ export default function PickDateTime() {
 
   return (
     <div>
+      <Toast ref={toast} />
       <Dialog
         visible={showJointAccountPopUp}
         onHide={() => toggleJointAccountPopUp(false)}
@@ -140,17 +150,22 @@ export default function PickDateTime() {
           />
         </div>
       </Dialog>
-      <div className="d-flex justify-content-between">
+      <div className="d-flex flex-column justify-content-between">
+        <label htmlFor="pick-date" className="form-label">
+          Pick a date
+        </label>
         <Calendar
+          id="pick-date"
           value={date}
           onChange={(e) => {
             setDate(e.value);
           }}
-          inline
+          placeholder="Pick a date"
           showWeek
           className="me-3"
         />
         <div className="flex-fill d-flex flex-column justify-content-start">
+          <label htmlFor="">Available appointments:</label>
           <DataTable
             value={availableAppointments}
             selectionMode="row"

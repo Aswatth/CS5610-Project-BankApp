@@ -69,7 +69,7 @@ export default function Login() {
         console.log(cred);
         setCredential(cred);
 
-        handleCustomerLogin();
+        handleLogin();
       } else if (status == 400) {
         console.log("User name already taken");
       } else {
@@ -294,7 +294,7 @@ export default function Login() {
           This is a sample text. Something meaningful will go here.
         </div>
       </div>
-      <div className="brand-info">
+      <div className="brand-info d-none d-lg-block">
         <div className="d-flex justify-content-center align-items-center">
           <img src={logo} alt="logo" className="m-0 p-0" />
         </div>

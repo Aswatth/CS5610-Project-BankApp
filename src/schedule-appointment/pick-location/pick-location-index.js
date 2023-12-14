@@ -85,12 +85,6 @@ export default function PickLocation() {
             ></Column>
             <Column body={selectTemplate}></Column>
           </DataTable>
-          {/* <div className="flex-fill d-flex justify-content-center align-items-center">
-            <Map
-              lat={selectedBranch.latitude}
-              lon={selectedBranch.longitude}
-            ></Map>
-          </div> */}
         </div>
       );
     } else {
@@ -98,17 +92,8 @@ export default function PickLocation() {
     }
   };
 
-  useEffect(() => {
-    // navigator.geolocation.getCurrentPosition((position) => {
-    //   //if permission granted
-    //   setLatitude(position.coords.latitude);
-    //   setLongitude(position.coords.longitude);
-    // });
-    // getNearestBranches();
-  }, []);
-
   const selectTemplate = (rowData) => {
-    if (selectedBranch && rowData.branch === selectedBranch.branch) {
+    if (selectedBranch && rowData.address === selectedBranch.address) {
       return <Tag value="Selected" severity="success"></Tag>;
     }
     if (!rowData.isSelected) {
@@ -125,30 +110,37 @@ export default function PickLocation() {
     }
   };
 
+  const handleSubmit = () => {
+    mapClient.LocationToCoord(currentLocation).then((data) => {
+      // setLatitude(data.lat);
+      // setLongitude(data.lon);
+      getBranches(data.lat, data.lon);
+    });
+  };
+
   return (
     <div className="d-flex">
       <div className="flex-fill">
-        <div className="p-inputgroup mb-3">
-          <label htmlFor="current-location" className="mt-2 me-2">
+        <div className="d-flex flex-column">
+          <label htmlFor="current-location">
             Enter ZIP code or city and state:
           </label>
-          <InputText
-            value={currentLocation}
-            onChange={(e) => setCurrentLocation(e.target.value)}
-            placeholder="Your location"
-            id="current-location"
-          />
-          <Button
-            icon="pi pi-search"
-            className="color-1 border"
-            onClick={() => {
-              mapClient.LocationToCoord(currentLocation).then((data) => {
-                // setLatitude(data.lat);
-                // setLongitude(data.lon);
-                getBranches(data.lat, data.lon);
-              });
-            }}
-          />
+          <form onSubmit={handleSubmit}>
+            <div className="p-inputgroup">
+              <InputText
+                value={currentLocation}
+                onChange={(e) => setCurrentLocation(e.target.value)}
+                placeholder="Your location"
+                required
+                id="current-location"
+              />
+              <Button
+                icon="pi pi-search"
+                type="submit"
+                className="color-1 border"
+              />
+            </div>
+          </form>
         </div>
 
         <div>{content()}</div>

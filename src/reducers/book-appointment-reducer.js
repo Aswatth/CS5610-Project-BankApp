@@ -8,7 +8,7 @@ const initialState = {
   selectedEndTime: "",
   purpose: "",
   customerInfo: {},
-  jointCustomers: [],
+  jointCustomers: null,
 };
 
 const bookAppointmentSlice = createSlice({

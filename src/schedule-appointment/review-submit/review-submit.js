@@ -27,7 +27,7 @@ export default function ReviewAndSubmitAppoinment({
             <label htmlFor="address">Address: {customerInfo.address}</label>
             <label htmlFor="username">Username: {customerInfo.username}</label>
             <label htmlFor="password">Password: {customerInfo.password}</label>
-            <label htmlFor="password">Purpose: {purpose}</label>
+            <label htmlFor="purpose">Purpose: {purpose}</label>
           </div>
         </div>
       );
