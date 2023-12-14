@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import logo from "../logo.svg";
 import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
@@ -9,8 +9,10 @@ import * as customerClient from "../clients/customer-client";
 import { Dialog } from "primereact/dialog";
 import { jwtDecode } from "jwt-decode";
 import Cookies from "js-cookie";
+import { Toast } from "primereact/toast";
 
 export default function Login() {
+  const toast = useRef(null);
   const navigate = useNavigate();
   const [credential, setCredential] = useState({ username: "", password: "" });
 
@@ -18,38 +20,37 @@ export default function Login() {
   const [newCustomerData, setNewCustomerData] = useState({});
 
   const handleLogin = () => {
-    // Admin
-    adminClient.login(credential).then((response) => {
-      if (response.status == 200) {
-        const token = response.data.token;
+    adminClient
+      .login(credential)
+      .then((response) => {
+        if (response.status == 200) {
+          const token = response.data.token;
 
-        Cookies.set("bank-app-token", token);
+          Cookies.set("bank-app-token", token);
 
-        const decodedUser = jwtDecode(token)["user_type"];
+          const decodedUser = jwtDecode(token)["user_type"];
 
-        switch (decodedUser) {
-          case "admin":
-            navigate("/admin/home");
-            break;
-          case "customer":
-            navigate("/customer/home");
-            break;
-          case "employee":
-            navigate("/employee/home");
-            break;
+          switch (decodedUser) {
+            case "admin":
+              navigate("/admin/home");
+              break;
+            case "customer":
+              navigate("/customer/home");
+              break;
+            case "employee":
+              navigate("/employee/home");
+              break;
+          }
         }
-      }
-    });
-
-    // handleCustomerLogin();
-  };
-
-  const handleCustomerLogin = () => {
-    customerClient.login(credential).then((status) => {
-      if (status == 200) {
-        navigate("/customer/home");
-      }
-    });
+      })
+      .catch((response) => {
+        console.log(JSON.stringify(response.response.data.error));
+        toast.current.show({
+          severity: "error",
+          summary: "Error",
+          detail: `${response.response.data.error}`,
+        });
+      });
   };
 
   const toggleRegisterUI = () => {
@@ -237,6 +238,7 @@ export default function Login() {
 
   return (
     <div className="p-2 color-1 vh-100 d-flex justify-content-center">
+      <Toast ref={toast} />
       <Dialog
         header="Register"
         visible={registerVisibility}

@@ -3,7 +3,7 @@ import "./customer-home-index.css";
 import CustomerCard from "./customer-card/customer-card-index";
 import { Button } from "primereact/button";
 import { Carousel } from "primereact/carousel";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import CustomerCurrentBalance from "./customer-current-balance/current-current-balance-index";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
@@ -12,8 +12,10 @@ import { useNavigate } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
 import * as customerClient from "../../clients/customer-client";
 import * as customerReducer from "../../reducers/customer-reducer";
+import { Toast } from "primereact/toast";
 
 export default function CustomerHome() {
+  const toast = useRef(null);
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [currentCardIndex, updateCurrentCardIndex] = useState(0);
@@ -54,25 +56,44 @@ export default function CustomerHome() {
   const accountList = useSelector((state) => state.customerReducer.accountList);
 
   useEffect(() => {
-    customerClient.getAccounts().then((response) => {
-      if (!customerClient.isCustomer()) {
-        navigate("/login");
-        return;
-      }
-      if (response.status == 200) {
-        dispatch(customerReducer.setAccountList(response.data));
-      }
-    });
-
-    customerClient.getCards().then((response) => {
-      if (response == null || response.status == 401) {
-        navigate("/login");
-        return;
-      }
-      if (response.status == 200) {
-        setCardList(response.data);
-      }
-    });
+    customerClient
+      .getAccounts()
+      .then((response) => {
+        if (!customerClient.isCustomer()) {
+          navigate("/login");
+          return;
+        }
+        if (response.status == 200) {
+          dispatch(customerReducer.setAccountList(response.data));
+        }
+      })
+      .catch((response) => {
+        toast.current.show({
+          severity: "error",
+          summary: "Error",
+          detail: `${response.response.data.error}`,
+          life: 3000,
+        });
+      });
+    customerClient
+      .getCards()
+      .then((response) => {
+        if (response == null || response.status == 401) {
+          navigate("/login");
+          return;
+        }
+        if (response.status == 200) {
+          setCardList(response.data);
+        }
+      })
+      .catch((response) => {
+        toast.current.show({
+          severity: "error",
+          summary: "Error",
+          detail: `${response.response.data.error}`,
+          life: 3000,
+        });
+      });
   }, []);
 
   const [selectedAccount, setSelectedAccount] = useState(null);
@@ -127,6 +148,7 @@ export default function CustomerHome() {
 
   return (
     <div className="d-flex flex-column">
+      <Toast ref={toast} />
       <div className="flex-fill d-flex mb-1">
         <div className="card-transactions-section me-1 d-flex flex-column">
           <div className="border rounded p-3 flex-fill">
@@ -181,9 +203,9 @@ export default function CustomerHome() {
           <h4>Accounts:</h4>
           <DataTable
             value={accountList}
-            selectionMode="single"
-            selection={selectedAccount}
-            onSelectionChange={(s) => setSelectedAccount(s.value)}
+            // selectionMode="single"
+            // selection={selectedAccount}
+            // onSelectionChange={(s) => setSelectedAccount(s.value)}
           >
             <Column field="accountType" header="Account type"></Column>
             <Column field="accountNumber" header="Account number"></Column>

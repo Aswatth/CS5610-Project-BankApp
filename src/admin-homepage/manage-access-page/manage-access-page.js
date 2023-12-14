@@ -2,13 +2,15 @@ import { Button } from "primereact/button";
 import { Card } from "primereact/card";
 import { Column } from "primereact/column";
 import { DataTable } from "primereact/datatable";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import * as client from "../../clients/admin-client";
 import * as employeeReducer from "../../reducers/employee-reducer";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router";
+import { Toast } from "primereact/toast";
 
 export default function AdminAccessPage() {
+  const toast = useRef(null);
   const dispatch = useDispatch();
   const employees = useSelector((state) => state.employeeReducer.employees);
   const [selectedEmployee, updateSelectedEmployee] = useState();
@@ -17,18 +19,19 @@ export default function AdminAccessPage() {
   const navigate = useNavigate();
 
   function refresh() {
-    client.getEmployees().then((response) => {
-      if (response == null || response.status == 401) {
+    client
+      .getEmployees()
+      .then((response) => {
+        dispatch(employeeReducer.setEmployees(response.data));
+      })
+      .catch((response) => {
         navigate("/login");
-        return;
-      }
-      dispatch(employeeReducer.setEmployees(response.data));
-    });
+      });
   }
 
   useEffect(() => {
     refresh();
-  }, []);
+  }, [selectedEmployee]);
 
   const accessTemplate = (value) => {
     if (value == true) {
@@ -49,14 +52,26 @@ export default function AdminAccessPage() {
   };
 
   const updateAccess = (accessName, accessStatus) => {
-    const updatedAccess = selectedEmployee.accessList.map((item) =>
-      item.accessName == accessName
-        ? { ...item, accessGiven: accessStatus }
-        : item
-    );
+    if (selectedEmployee.accessList.length == 0) {
+      console.log("here");
+      updateSelectedEmployee({
+        ...selectedEmployee,
+        accessList: [{ accessName: accessName, accessGiven: accessStatus }],
+      });
+    } else {
+      console.log("here2");
+      const updatedAccess = selectedEmployee.accessList.map((item) =>
+        item.accessName == accessName
+          ? { ...item, accessGiven: accessStatus }
+          : item
+      );
 
-    // console.log({ ...selectedEmployee, accessList: updatedAccess });
-    updateSelectedEmployee({ ...selectedEmployee, accessList: updatedAccess });
+      // console.log({ ...selectedEmployee, accessList: updatedAccess });
+      updateSelectedEmployee({
+        ...selectedEmployee,
+        accessList: updatedAccess,
+      });
+    }
   };
 
   const viewCustomerAccessTemplate = (row) => {
@@ -67,7 +82,8 @@ export default function AdminAccessPage() {
     ) {
       let access = selectedEmployee.accessList.find(
         (f) => f.accessName == "view_customer_details"
-      ).accessGiven;
+      );
+      access = access ? access.accessGiven : false;
       return (
         <div>
           <input
@@ -99,7 +115,8 @@ export default function AdminAccessPage() {
     ) {
       let access = selectedEmployee.accessList.find(
         (f) => f.accessName == "view_customer_transactions"
-      ).accessGiven;
+      );
+      access = access ? access.accessGiven : false;
       return (
         <div>
           <input
@@ -131,7 +148,8 @@ export default function AdminAccessPage() {
     ) {
       let access = selectedEmployee.accessList.find(
         (f) => f.accessName == "create_customer"
-      ).accessGiven;
+      );
+      access = access ? access.accessGiven : false;
       return (
         <div>
           <input
@@ -163,7 +181,8 @@ export default function AdminAccessPage() {
     ) {
       let access = selectedEmployee.accessList.find(
         (f) => f.accessName == "approve_card"
-      ).accessGiven;
+      );
+      access = access ? access.accessGiven : false;
       return (
         <div>
           <input
@@ -226,6 +245,14 @@ export default function AdminAccessPage() {
           if (response.status == 200) {
             refresh();
           }
+        })
+        .catch((response) => {
+          toast.current.show({
+            severity: "error",
+            summary: "Error",
+            detail: `${response.response.data.error}`,
+            life: 3000,
+          });
         });
     }
 
@@ -234,6 +261,7 @@ export default function AdminAccessPage() {
 
   return (
     <div>
+      <Toast ref={toast} />
       <h3>Employee Accesses: </h3>
       <DataTable
         value={employees}

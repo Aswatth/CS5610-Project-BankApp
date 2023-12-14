@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import AddEmployee from "./add-employee/add-employee-index";
 import { Button } from "primereact/button";
 
@@ -6,9 +6,11 @@ import * as client from "../../clients/admin-client";
 import { useDispatch, useSelector } from "react-redux";
 import * as employeeReducer from "../../reducers/employee-reducer";
 import ViewEmployees from "./view-employees";
+import { Toast } from "primereact/toast";
 // import employeeAccessReducer from "../../reducers/employee-access-reducer";
 
 export default function EmployeeIndex() {
+  const toast = useRef(null);
   const dispatch = useDispatch();
   const [isAddingEmployee, toggleAddEmployee] = useState(false);
   const employee = useSelector((state) => state.employeeReducer.employee);
@@ -25,16 +27,37 @@ export default function EmployeeIndex() {
 
   const handleAddEmployee = () => {
     let employeeToAdd = { ...employee, accessList: accessList };
-    client.addEmployee(employeeToAdd).then((addResponse) => {
-      if (addResponse.status == 200 || addResponse.status == 201) {
-        client.getEmployees().then((response) => {
-          dispatch(employeeReducer.setEmployees(response.data));
-        });
-        dispatch(employeeReducer.setEmployee({}));
+    client
+      .addEmployee(employeeToAdd)
+      .then((addResponse) => {
+        if (addResponse.status == 200 || addResponse.status == 201) {
+          client
+            .getEmployees()
+            .then((response) => {
+              dispatch(employeeReducer.setEmployees(response.data));
 
-        toggleAddEmployee(!isAddingEmployee);
-      }
-    });
+              dispatch(employeeReducer.setEmployee({}));
+
+              toggleAddEmployee(!isAddingEmployee);
+            })
+            .catch((response) => {
+              toast.current.show({
+                severity: "error",
+                summary: "Error",
+                detail: `${response.response.data.error}`,
+                life: 3000,
+              });
+            });
+        }
+      })
+      .catch((response) => {
+        toast.current.show({
+          severity: "error",
+          summary: "Error",
+          detail: `${response.response.data.error}`,
+          life: 3000,
+        });
+      });
   };
 
   const buttonsToDisplay = () => {
@@ -70,6 +93,7 @@ export default function EmployeeIndex() {
 
   return (
     <div>
+      <Toast ref={toast} />
       <div className="d-flex mb-2">
         <div className="d-flex justify-content-start flex-fill">
           <h2>{isAddingEmployee ? "Add employee" : "Employee list:"}</h2>

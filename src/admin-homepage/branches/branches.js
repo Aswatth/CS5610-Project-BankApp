@@ -135,24 +135,26 @@ export default function Branches() {
                     address: address,
                     latitude: +data.lat,
                     longitude: +data.lon,
-                  }).then((response) => {
-                    if (response == null || response.status == 401) {
+                  })
+                    .then((response) => {
+                      if ((response.status == 200) | (response.status == 201)) {
+                        getBranches().then((resposne) => {
+                          setBranchList(resposne.data);
+                          setAddBranchVisibility(false);
+                          navigate(0);
+                        });
+                      }
+                    })
+                    .catch(() => {
                       navigate("/login");
-                    } else if (response.status == 200) {
-                      getBranches().then((resposne) => {
-                        setBranchList(resposne.data);
-
-                        setAddBranchVisibility(false);
-                      });
-                    }
-                  });
+                    });
                 });
               }
             }}
           ></Button>
         </div>
       </Dialog>
-      <DataTable value={branchList}>
+      <DataTable value={branchList} scrollHeight="500px" scrollable>
         <Column field="branch" header="Branch"></Column>
         <Column field="address" header="Address"></Column>
       </DataTable>

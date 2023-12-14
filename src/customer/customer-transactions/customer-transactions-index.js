@@ -1,33 +1,47 @@
 import { Button } from "primereact/button";
 import { Column } from "primereact/column";
 import { DataTable } from "primereact/datatable";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import * as customerClient from "../../clients/customer-client";
 import { useNavigate } from "react-router";
 import { Tag } from "primereact/tag";
+import { Toast } from "bootstrap";
 
 export default function CustomerTransactions() {
+  const toast = useRef(null);
   const navigate = useNavigate();
   const [transactionList, setTransactionList] = useState([]);
 
   const [accountList, setAccounts] = useState([]);
 
   useEffect(() => {
-    customerClient.getTransactions().then((response) => {
-      if (!customerClient.isCustomer()) {
-        navigate("/login");
-        return;
-      }
-      if (response.status == 200 || response.status == 201) {
-        setTransactionList(response.data);
+    customerClient
+      .getTransactions()
+      .then((response) => {
+        if (!customerClient.isCustomer()) {
+          navigate("/login");
+          return;
+        }
+        if (response.status == 200 || response.status == 201) {
+          setTransactionList(
+            response.data.sort((a, b) => b.transactionId - a.transactionId)
+          );
 
-        customerClient.getAccounts().then((response) => {
-          if (response.status == 200) {
-            setAccounts(response.data);
-          }
+          customerClient.getAccounts().then((response) => {
+            if (response.status == 200) {
+              setAccounts(response.data);
+            }
+          });
+        }
+      })
+      .catch((response) => {
+        toast.current.show({
+          severity: "error",
+          summary: "Error",
+          detail: `${response.response.data.error}`,
+          life: 3000,
         });
-      }
-    });
+      });
   }, []);
 
   const amountTemplate = (row) => {
@@ -58,6 +72,7 @@ export default function CustomerTransactions() {
 
   return (
     <div>
+      <Toast ref={toast} />
       <div className="d-flex mb-2">
         <div className="flex-fill d-flex justify-content-start">
           <h3>Transactions</h3>
@@ -71,7 +86,7 @@ export default function CustomerTransactions() {
           ></Button>
         </div>
       </div>
-      <DataTable value={transactionList}>
+      <DataTable value={transactionList} scrollable scrollHeight="500px">
         <Column field="transactionDate" header="Date"></Column>
         <Column field="senderAccount" header="From"></Column>
         <Column field="receiverAccount" header="To"></Column>

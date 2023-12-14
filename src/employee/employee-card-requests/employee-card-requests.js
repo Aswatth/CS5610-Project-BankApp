@@ -3,13 +3,15 @@ import { Column } from "primereact/column";
 import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
 import { DataTable } from "primereact/datatable";
 import { Tag } from "primereact/tag";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import * as employeeClient from "../../clients/employee-client";
 import { useNavigate } from "react-router";
 import { Dialog } from "primereact/dialog";
 import { InputText } from "primereact/inputtext";
+import { Toast } from "primereact/toast";
 
 export default function EmployeeCardRequests() {
+  const toast = useRef(null);
   const navigate = useNavigate();
   const [cardRequestList, setCardList] = useState([]);
 
@@ -24,16 +26,25 @@ export default function EmployeeCardRequests() {
   const [dialogVisibility, setDialogVisibility] = useState(false);
 
   useEffect(() => {
-    employeeClient.viewCardRequests().then((response) => {
-      if (!employeeClient.isEmployee()) {
-        navigate("/login");
-        return;
-      }
-      if (response.status == 200) {
-        console.log(response.data);
-        setCardList(response.data);
-      }
-    });
+    employeeClient
+      .viewCardRequests()
+      .then((response) => {
+        if (!employeeClient.isEmployee()) {
+          navigate("/login");
+          return;
+        }
+        if (response.status == 200) {
+          setCardList(response.data);
+        }
+      })
+      .catch((response) => {
+        toast.current.show({
+          severity: "error",
+          summary: "Error",
+          detail: `${response.response.data.error}`,
+          life: 3000,
+        });
+      });
   }, []);
 
   const handleApproveRejectClick = (id, isApproved) => {
@@ -72,18 +83,6 @@ export default function EmployeeCardRequests() {
         ) {
           return (
             <div>
-              {/* <Button
-                label="Approve"
-                severity="success"
-                className="border rounded p-2"
-                onClick={() => confirm(row.id, true)}
-              ></Button>
-              <Button
-                label="Reject"
-                severity="danger"
-                className="border rounded p-2"
-                onClick={() => confirm(row.id, false)}
-              ></Button> */}
               <Button
                 label="Take action"
                 severity="info"
@@ -105,6 +104,7 @@ export default function EmployeeCardRequests() {
 
   return (
     <div>
+      <Toast ref={toast} />
       <Dialog
         visible={dialogVisibility}
         onHide={() => setDialogVisibility(false)}

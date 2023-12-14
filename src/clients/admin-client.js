@@ -6,6 +6,7 @@ import { useState } from "react";
 const API = process.env.REACT_APP_API;
 
 export const login = async (credential) => {
+  console.log(credential);
   const response = await axios.post(API + "/login", credential);
   return response;
 };

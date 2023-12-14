@@ -3,13 +3,15 @@ import { Column } from "primereact/column";
 import { DataTable } from "primereact/datatable";
 import { Dialog } from "primereact/dialog";
 import { Tag } from "primereact/tag";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import EmploayeeCreateCustomer from "../employee-create-customer/employee-create-customer";
 import EmployeeCreateAppointment from "../employee-create-appointment/employee-create-appointment";
 import * as employeeClient from "../../clients/employee-client";
 import { useNavigate } from "react-router";
+import { Toast } from "primereact/toast";
 
 export default function EmployeeViewAppointments({ hasCreateCusomterAccess }) {
+  const toast = useRef(null);
   const navigate = useNavigate();
   const [appointmentsToDisplay, setAppointmentsToDisplay] = useState([]);
   const [selectedAppointment, setSelectedAppointment] = useState();
@@ -23,11 +25,21 @@ export default function EmployeeViewAppointments({ hasCreateCusomterAccess }) {
     useState("");
 
   function getBookedAppointments() {
-    employeeClient.getAssignedAppointments().then((response) => {
-      if (response.status == 200) {
-        setAppointmentsToDisplay(response.data);
-      }
-    });
+    employeeClient
+      .getAssignedAppointments()
+      .then((response) => {
+        if (response.status == 200) {
+          setAppointmentsToDisplay(response.data);
+        }
+      })
+      .catch((response) => {
+        toast.current.show({
+          severity: "error",
+          summary: "Error",
+          detail: `${response.response.data.error}`,
+          life: 3000,
+        });
+      });
   }
 
   useEffect(() => {
@@ -50,14 +62,6 @@ export default function EmployeeViewAppointments({ hasCreateCusomterAccess }) {
   const handleAppointment = () => {
     setCreateCustomerVisibilty(true);
     markAppointmentAsCompleted();
-    // if (
-    //   selectedAppointment.purpose.toLowerCase().replaceAll(" ", "-") ==
-    //   "new-account-creation"
-    // ) {
-    //   setCreateCustomerVisibilty(true);
-    // } else {
-    //   markAppointmentAsCompleted();
-    // }
   };
 
   const handleAppointmentResolution = (resolutionType) => {
@@ -164,6 +168,7 @@ export default function EmployeeViewAppointments({ hasCreateCusomterAccess }) {
   };
   return (
     <div>
+      <Toast ref={toast} />
       <div className="d-flex mb-2">
         <div className="flex-fill d-flex justify-content-start">
           <h3>Today's appointments</h3>

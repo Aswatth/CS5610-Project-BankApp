@@ -46,6 +46,14 @@ export default function PickDateTime() {
         dispatch(bookAppointmentReducer.setDate(formatDateYYYYMMDD(date)));
 
         setAvailableAppointments(response.data);
+      })
+      .catch((response) => {
+        toast.current.show({
+          severity: "error",
+          summary: "Error",
+          detail: `${response.response.data.error}`,
+          life: 3000,
+        });
       });
 
     if (isCustomer && !purposes.find((f) => "Joint account")) {

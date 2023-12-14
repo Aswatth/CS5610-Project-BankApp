@@ -210,6 +210,14 @@ export default function EmploayeeCreateCustomer({ customerData }) {
                 if (response.status == 200 || response.status == 201) {
                   navigate(0);
                 }
+              })
+              .catch((response) => {
+                toast.current.show({
+                  severity: "error",
+                  summary: "Error",
+                  detail: `${response.response.data.error}`,
+                  life: 3000,
+                });
               });
           }
         }}

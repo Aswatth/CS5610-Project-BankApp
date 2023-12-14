@@ -3,12 +3,14 @@ import { Calendar } from "primereact/calendar";
 import { Dropdown } from "primereact/dropdown";
 import { InputNumber } from "primereact/inputnumber";
 import { InputText } from "primereact/inputtext";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import * as customerClient from "../../clients/customer-client";
 import { useNavigate } from "react-router";
+import { Toast } from "primereact/toast";
 
 export default function CustomerSendMoney() {
+  const toast = useRef(null);
   const navigate = useNavigate();
   const [selectedAccount, setSelectedAccount] = useState();
 
@@ -25,8 +27,9 @@ export default function CustomerSendMoney() {
   }, []);
   return (
     <div className="d-flex flex-column">
+      <Toast ref={toast} />
       <Dropdown
-        className="flex-fill"
+        className="flex-fill mb-2"
         options={accountList.map((m) => m.accountType)}
         value={selectedAccount ? selectedAccount.accountType : null}
         onChange={(c) => {
@@ -37,8 +40,10 @@ export default function CustomerSendMoney() {
         }}
       ></Dropdown>
       <InputText
-        className="form-control"
-        placeholder={selectedAccount ? selectedAccount.accountNumber : null}
+        className="form-control mb-2"
+        placeholder={
+          selectedAccount ? selectedAccount.accountNumber : "Account number"
+        }
         // value={
         //   selectedAccount
         //     ? selectedAccount.accountNumber
@@ -49,6 +54,7 @@ export default function CustomerSendMoney() {
       <InputText
         placeholder="Receiving account number"
         type="number"
+        className="mb-2"
         onChange={(c) =>
           setTransferDetails({
             ...transferDetails,
@@ -56,19 +62,29 @@ export default function CustomerSendMoney() {
           })
         }
       />
-      <div className="p-inputgroup flex-1">
+      <div className="p-inputgroup flex-1 mb-2">
         <span className="p-inputgroup-addon">
           <i className="pi pi-dollar"></i>
         </span>
         <InputNumber
           placeholder="Amount to transfer"
-          onValueChange={(c) =>
-            setTransferDetails({ ...transferDetails, amount: c.value })
-          }
+          onValueChange={(c) => {
+            if (c.value >= 1) {
+              setTransferDetails({ ...transferDetails, amount: c.value });
+            } else {
+              toast.current.show({
+                severity: "error",
+                summary: "Error",
+                detail: `Amount should be greater than 1`,
+                life: 3000,
+              });
+            }
+          }}
         />
       </div>
       <InputText
         placeholder="Message"
+        className="mb-2"
         onChange={(c) =>
           setTransferDetails({
             ...transferDetails,
@@ -76,7 +92,7 @@ export default function CustomerSendMoney() {
           })
         }
       />
-      <Calendar disabled value={new Date()} />
+      <Calendar disabled value={new Date()} className="mb-2" />
       <Button
         label="Send"
         icon="pi pi-send"
@@ -106,11 +122,21 @@ export default function CustomerSendMoney() {
               "-" +
               date.getDate(),
           };
-          customerClient.sendMoney(details).then((resposne) => {
-            if (resposne.status == 200) {
-              navigate("/customer/home");
-            }
-          });
+          customerClient
+            .sendMoney(details)
+            .then((response) => {
+              if (response.status == 200 || response.status == 201) {
+                navigate("/customer/view-transactions");
+              }
+            })
+            .catch((response) => {
+              toast.current.show({
+                severity: "error",
+                summary: "Error",
+                detail: `${response.response.data.error}`,
+                life: 3000,
+              });
+            });
         }}
       ></Button>
     </div>

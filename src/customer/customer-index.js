@@ -1,6 +1,6 @@
 import { Card } from "primereact/card";
 import { ListBox } from "primereact/listbox";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import CustomerHome from "./customer-home/customer-home-index";
 import {
   Navigate,
@@ -17,8 +17,10 @@ import CustomerAppoointments from "./customer-appointments/customer-appointments
 import Cookies from "js-cookie";
 import CustomerProfile from "./customer-profile/customer-profile";
 import * as customerClient from "../clients/customer-client";
+import { Toast } from "primereact/toast";
 
 export default function CustomerPage() {
+  const toast = useRef(null);
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const [options, setOptions] = useState([
@@ -86,22 +88,32 @@ export default function CustomerPage() {
   const [profile, setProfile] = useState({});
 
   useEffect(() => {
-    customerClient.getProfile().then((response) => {
-      if (response.status == 200) {
-        setProfile(response.data);
-        if (response.data.accounts == null && response.data.cards == null) {
-          let updatedOptions = options;
-          updatedOptions = updatedOptions.filter(
-            (f) =>
-              f.name == "Profile" ||
-              f.name == "Appointments" ||
-              f.name == "Log out"
-          );
-          setOptions(updatedOptions);
-          navigate("/customer/appointments");
+    customerClient
+      .getProfile()
+      .then((response) => {
+        if (response.status == 200) {
+          setProfile(response.data);
+          if (response.data.accounts == null && response.data.cards == null) {
+            let updatedOptions = options;
+            updatedOptions = updatedOptions.filter(
+              (f) =>
+                f.name == "Profile" ||
+                f.name == "Appointments" ||
+                f.name == "Log out"
+            );
+            setOptions(updatedOptions);
+            navigate("/customer/appointments");
+          }
         }
-      }
-    });
+      })
+      .catch((response) => {
+        toast.current.show({
+          severity: "error",
+          summary: "Error",
+          detail: `${response.response.data.error}`,
+          life: 3000,
+        });
+      });
   }, []);
 
   const selectedOption = options.find((f) =>
@@ -134,14 +146,15 @@ export default function CustomerPage() {
   };
   return (
     <div className="vh-100 color-1 d-flex flex-column">
-      <div className="d-flex p-3">
-        <div className="flex-fill">
+      <Toast ref={toast} />
+      <div className="d-flex flex-column p-3">
+        <Card>
           <h4>
             Welcome {profile.lastName}, {profile.firstName}
           </h4>
-        </div>
+        </Card>
       </div>
-      <div className="d-flex p-3">
+      <div className="flex-fill d-flex p-3">
         <div
           className="side-panel border rounded"
           style={{ backgroundColor: "white" }}

@@ -2,11 +2,13 @@ import { Button } from "primereact/button";
 import { Dropdown } from "primereact/dropdown";
 import { InputNumber } from "primereact/inputnumber";
 import { InputText } from "primereact/inputtext";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import * as customerClient from "../../../clients/customer-client";
 import { useNavigate } from "react-router";
+import { Toast } from "primereact/toast";
 
 export default function CustomerNewCardRequest() {
+  const toast = useRef(null);
   const navigate = useNavigate();
   const creditCardTypes = ["Platinum", "Gold", "Silver"];
   const [cardRequestData, updateCardRequestData] = useState({
@@ -16,6 +18,7 @@ export default function CustomerNewCardRequest() {
 
   return (
     <div className="d-flex flex-column">
+      <Toast ref={toast} />
       <label htmlFor="cardType">Card type:</label>
       <InputText id="cardType" value="Credit card" disabled />
       <label htmlFor="cardNetwork">Card type:</label>
@@ -53,6 +56,14 @@ export default function CustomerNewCardRequest() {
               if (resposne.status == 200 || resposne.status == 201) {
                 navigate(0);
               }
+            })
+            .catch((response) => {
+              toast.current.show({
+                severity: "error",
+                summary: "Error",
+                detail: `${response.response.data.error}`,
+                life: 3000,
+              });
             });
         }}
       ></Button>

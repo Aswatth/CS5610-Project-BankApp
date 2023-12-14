@@ -1,11 +1,13 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import * as customerClient from "../../clients/customer-client";
 import { InputText } from "primereact/inputtext";
 import { Calendar } from "primereact/calendar";
 import { useNavigate } from "react-router";
 import { Button } from "primereact/button";
+import { Toast } from "primereact/toast";
 
 export default function CustomerProfile() {
+  const toast = useRef(null);
   const navigate = useNavigate();
   const [customerData, setCustomerData] = useState({});
   const [disabled, setDisabled] = useState(true);
@@ -15,24 +17,35 @@ export default function CustomerProfile() {
       navigate("/login");
       return;
     }
-    customerClient.getProfile().then((response) => {
-      let data = response.data;
-      setCustomerData({
-        customerId: data.customerId,
-        firstName: data.firstName,
-        lastName: data.lastName,
-        email: data.email,
-        phone: data.phone,
-        dateOfBirth: data.dateOfBirth,
-        address: data.address,
-        username: data.username,
-        password: data.password,
+    customerClient
+      .getProfile()
+      .then((response) => {
+        let data = response.data;
+        setCustomerData({
+          customerId: data.customerId,
+          firstName: data.firstName,
+          lastName: data.lastName,
+          email: data.email,
+          phone: data.phone,
+          dateOfBirth: data.dateOfBirth,
+          address: data.address,
+          username: data.username,
+          password: data.password,
+        });
+      })
+      .catch((response) => {
+        toast.current.show({
+          severity: "error",
+          summary: "Error",
+          detail: `${response.response.data.error}`,
+          life: 3000,
+        });
       });
-    });
   }, []);
 
   return (
     <div className="d-flex flex-column">
+      <Toast ref={toast} />
       <Button
         icon={disabled ? "pi pi-pencil" : "pi pi-save"}
         onClick={() => {

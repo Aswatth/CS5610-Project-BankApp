@@ -4,7 +4,7 @@ import { Column } from "primereact/column";
 import { DataTable } from "primereact/datatable";
 import { InputText } from "primereact/inputtext";
 import { Tag } from "primereact/tag";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import * as mapClient from "../../clients/map-client";
 import { getNearestBranches } from "../../clients/admin-client";
@@ -13,8 +13,10 @@ import Map from "./map-index";
 import * as bookAppointmentReducer from "../../reducers/book-appointment-reducer";
 import { getBranches } from "../../clients/admin-client";
 import { useDispatch } from "react-redux";
+import { Toast } from "primereact/toast";
 
 export default function PickLocation() {
+  const toast = useRef(null);
   const dispatch = useDispatch();
   const [branchList, setBranchList] = useState([]);
 
@@ -45,22 +47,31 @@ export default function PickLocation() {
   }
 
   function getBranches(latitude, longitude) {
-    getNearestBranches(latitude, longitude).then((response) => {
-      setBranchList(
-        response.data.map((m) => {
-          return {
-            ...m,
-            isSelected: false,
-            distance: calculateDistance(
-              latitude,
-              longitude,
-              m.latitude,
-              m.longitude
-            ),
-          };
-        })
-      );
-    });
+    getNearestBranches(latitude, longitude)
+      .then((response) => {
+        setBranchList(
+          response.data.map((m) => {
+            return {
+              ...m,
+              isSelected: false,
+              distance: calculateDistance(
+                latitude,
+                longitude,
+                m.latitude,
+                m.longitude
+              ),
+            };
+          })
+        );
+      })
+      .catch((response) => {
+        toast.current.show({
+          severity: "error",
+          summary: "Error",
+          detail: `${response.response.data.error}`,
+          life: 3000,
+        });
+      });
   }
 
   const content = () => {
@@ -120,6 +131,7 @@ export default function PickLocation() {
 
   return (
     <div className="d-flex">
+      <Toast ref={toast} />
       <div className="flex-fill">
         <div className="d-flex flex-column">
           <label htmlFor="current-location">

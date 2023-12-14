@@ -1,13 +1,15 @@
 import { Column } from "primereact/column";
 import { DataTable } from "primereact/datatable";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import * as employeeClient from "../../clients/employee-client";
 import { Button } from "primereact/button";
 import { Dialog } from "primereact/dialog";
 import { Tag } from "primereact/tag";
 import { useNavigate } from "react-router";
+import { Toast } from "primereact/toast";
 
 export default function EmployeeViewCustomers() {
+  const toast = useRef(null);
   const navigate = useNavigate();
   const [customers, setCustomers] = useState([]);
   const [selectedCustomer, setCustomer] = useState(null);
@@ -22,11 +24,21 @@ export default function EmployeeViewCustomers() {
       navigate("/login");
       return;
     }
-    employeeClient.viewCustomers().then((response) => {
-      if (response.status == 200) {
-        setCustomers(response.data);
-      }
-    });
+    employeeClient
+      .viewCustomers()
+      .then((response) => {
+        if (response.status == 200) {
+          setCustomers(response.data);
+        }
+      })
+      .catch((response) => {
+        toast.current.show({
+          severity: "error",
+          summary: "Error",
+          detail: `${response.response.data.error}`,
+          life: 3000,
+        });
+      });
   }, []);
 
   const viewMoreTemplate = (row) => {
@@ -151,6 +163,7 @@ export default function EmployeeViewCustomers() {
 
   return (
     <div>
+      <Toast ref={toast} />
       <Dialog
         visible={showMore}
         onHide={() => toggleShowMore(false)}

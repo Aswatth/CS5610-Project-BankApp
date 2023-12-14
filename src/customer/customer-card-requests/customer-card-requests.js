@@ -3,27 +3,39 @@ import { Column } from "primereact/column";
 import { DataTable } from "primereact/datatable";
 import { Dialog } from "primereact/dialog";
 import { Tag } from "primereact/tag";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import CustomerNewCardRequest from "./customer-new-card-request/customer-new-card-request";
 import * as customerClient from "../../clients/customer-client";
 import { useNavigate } from "react-router";
+import { Toast } from "primereact/toast";
 
 export default function CustomerCardRequests() {
+  const toast = useRef(null);
   const navigate = useNavigate();
 
   const [cardRequests, setCardRequests] = useState([]);
 
   useEffect(() => {
-    customerClient.viewCardRequests().then((response) => {
-      if (!customerClient.isCustomer()) {
-        navigate("/login");
-        return;
-      }
-      if (response.status == 200 || response.status == 201) {
-        console.log(response.data);
-        setCardRequests(response.data);
-      }
-    });
+    customerClient
+      .viewCardRequests()
+      .then((response) => {
+        if (!customerClient.isCustomer()) {
+          navigate("/login");
+          return;
+        }
+        if (response.status == 200 || response.status == 201) {
+          console.log(response.data);
+          setCardRequests(response.data);
+        }
+      })
+      .catch((response) => {
+        toast.current.show({
+          severity: "error",
+          summary: "Error",
+          detail: `${response.response.data.error}`,
+          life: 3000,
+        });
+      });
   }, []);
 
   const [cardRequestVisibility, updateCardRequestVisibility] = useState(false);
@@ -49,6 +61,7 @@ export default function CustomerCardRequests() {
 
   return (
     <div>
+      <Toast ref={toast} />
       <div className="d-flex justify-content-end mb-2">
         <Button
           label="New card request"

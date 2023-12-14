@@ -1,15 +1,17 @@
 import { Button } from "primereact/button";
 import { Column } from "primereact/column";
 import { DataTable } from "primereact/datatable";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router";
 import * as customerClient from "../../clients/customer-client";
 import * as appointmentClient from "../../clients/appointment-client";
 import { Tag } from "primereact/tag";
 import { Dialog } from "primereact/dialog";
 import { Calendar } from "primereact/calendar";
+import { Toast } from "primereact/toast";
 
 export default function CustomerAppoointments() {
+  const toast = useRef(null);
   const navigate = useNavigate();
 
   const [appointmentsToDisplay, setAppointments] = useState([]);
@@ -109,6 +111,7 @@ export default function CustomerAppoointments() {
 
   return (
     <div>
+      <Toast ref={toast} />
       <Dialog
         visible={showEditAppointment}
         onHide={() => toggleEditAppointment(false)}
@@ -154,6 +157,14 @@ export default function CustomerAppoointments() {
                     getAppointments();
                     toggleEditAppointment(false);
                   }
+                })
+                .catch((response) => {
+                  toast.current.show({
+                    severity: "error",
+                    summary: "Error",
+                    detail: `${response.response.data.error}`,
+                    life: 3000,
+                  });
                 });
             }}
           ></Button>

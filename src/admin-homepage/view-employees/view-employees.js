@@ -1,6 +1,6 @@
 import { Column } from "primereact/column";
 import { DataTable } from "primereact/datatable";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import * as client from "../../clients/admin-client";
 import * as employeeReducer from "../../reducers/employee-reducer";
 import { Dropdown } from "primereact/dropdown";
@@ -12,8 +12,10 @@ import { Dialog } from "primereact/dialog";
 import { InputMask } from "primereact/inputmask";
 import * as adminClient from "../../clients/admin-client";
 import { useNavigate } from "react-router";
+import { Toast } from "primereact/toast";
 
 export default function ViewEmployees() {
+  const toast = useRef(null);
   const dispatch = useDispatch();
   const employees = useSelector((state) => state.employeeReducer.employees);
   const [selectedEmployee, updateSelectedEmployee] = useState();
@@ -26,14 +28,16 @@ export default function ViewEmployees() {
 
   function refreshData() {
     client.getEmployees().then((response) => {
-      if (response == null || response.status == 401) {
-        navigate("/login");
-        return;
-      }
-      client.getBranches().then((branchResponse) => {
-        setBranchList(branchResponse.data.map((m) => m.branch));
-      });
-      dispatch(employeeReducer.setEmployees(response.data));
+      client
+        .getBranches()
+        .then((branchResponse) => {
+          setBranchList(branchResponse.data.map((m) => m.branch));
+          dispatch(employeeReducer.setEmployees(response.data));
+        })
+        .catch(() => {
+          navigate("/login");
+          return;
+        });
     });
   }
 
@@ -209,6 +213,14 @@ export default function ViewEmployees() {
                       refreshData();
                       toggleEditing(false);
                     }
+                  })
+                  .catch((resposne) => {
+                    toast.current.show({
+                      severity: "error",
+                      summary: "Error",
+                      detail: `${resposne.response.data.error}`,
+                      life: 3000,
+                    });
                   });
               }}
             ></Button>
@@ -220,6 +232,7 @@ export default function ViewEmployees() {
 
   return (
     <div>
+      <Toast ref={toast} />
       <div>
         <ConfirmDialog />
         <Dialog

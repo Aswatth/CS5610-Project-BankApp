@@ -141,7 +141,7 @@ export default function ScheduleAppointment() {
     if (activeIndex > 0) {
       return (
         <div className="flex-fill d-flex justify-content-start">
-          <Button
+          {/* <Button
             label={"Previous"}
             className={"color-2 border rounded"}
             onClick={() => {
@@ -150,7 +150,7 @@ export default function ScheduleAppointment() {
                 setActiveIndex(activeIndex - 1);
               }
             }}
-          ></Button>
+          ></Button> */}
         </div>
       );
     }
@@ -176,6 +176,14 @@ export default function ScheduleAppointment() {
                   });
                   navigate("/customer/appointments");
                 }
+              })
+              .catch((response) => {
+                toast.current.show({
+                  severity: "error",
+                  summary: "Something went wrong",
+                  detail: `${response.response.data.error}`,
+                  life: 3000,
+                });
               });
           } else {
             appointmentClient
@@ -195,6 +203,14 @@ export default function ScheduleAppointment() {
                   });
                   navigate("/customer/appointments");
                 }
+              })
+              .catch((response) => {
+                toast.current.show({
+                  severity: "error",
+                  summary: "Something went wrong",
+                  detail: `${response.response.data.error}`,
+                  life: 3000,
+                });
               });
           }
         } else {
@@ -202,18 +218,18 @@ export default function ScheduleAppointment() {
             .ScheduleAppointment(appointmentId, customerInfo, null, purpose)
             .then((response) => {
               if (response.status == 200 || response.status == 201) {
-                toast.current.show({
-                  severity: "success",
-                  summary: "Appointment created",
-                  detail: `Successfully scheduled an appointment on ${date}`,
-                  life: 3000,
-                });
                 navigate("/login");
               }
+            })
+            .catch((response) => {
+              toast.current.show({
+                severity: "error",
+                summary: "Something went wrong",
+                detail: `${response.response.data.error}`,
+                life: 3000,
+              });
             });
         }
-
-        // setNextDisable(false);
       }
     }
   };
@@ -225,9 +241,7 @@ export default function ScheduleAppointment() {
       <div className="color-1 vh-100 d-flex flex-column p-2 d-none d-lg-block">
         <Card className="schedule-step mb-2">
           <h3 className="">Schedule an appointment</h3>
-          <form onSubmit={handleSubmit}>
-            <Steps model={stepsToDisplay} activeIndex={activeIndex}></Steps>
-          </form>
+          <Steps model={stepsToDisplay} activeIndex={activeIndex}></Steps>
         </Card>
         <Card className="schedule-step-content flex-fill">
           <div className="d-flex">
@@ -251,6 +265,7 @@ export default function ScheduleAppointment() {
                     : ""
                 }
                 disabled={isNextDisabled}
+                onClick={handleSubmit}
               ></Button>
             </div>
           </div>
@@ -316,6 +331,14 @@ export default function ScheduleAppointment() {
                             ) {
                               navigate("/customer/appointments");
                             }
+                          })
+                          .catch((response) => {
+                            toast.current.show({
+                              severity: "error",
+                              summary: "Something went wrong",
+                              detail: `${response.response.data.error}`,
+                              life: 3000,
+                            });
                           });
                       }
                     } else {
@@ -333,6 +356,14 @@ export default function ScheduleAppointment() {
                           ) {
                             navigate("/login");
                           }
+                        })
+                        .catch((response) => {
+                          toast.current.show({
+                            severity: "error",
+                            summary: "Something went wrong",
+                            detail: `${response.response.data.error}`,
+                            life: 3000,
+                          });
                         });
                     }
 
