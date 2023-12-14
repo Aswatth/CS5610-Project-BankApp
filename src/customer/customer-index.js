@@ -16,6 +16,7 @@ import CustomerSendMoney from "./customer-send-money/customer-send-money";
 import CustomerAppoointments from "./customer-appointments/customer-appointments";
 import Cookies from "js-cookie";
 import CustomerProfile from "./customer-profile/customer-profile";
+import * as customerClient from "../clients/customer-client";
 
 export default function CustomerPage() {
   const navigate = useNavigate();
@@ -82,6 +83,16 @@ export default function CustomerPage() {
     },
   ];
 
+  const [profile, setProfile] = useState({});
+
+  useEffect(() => {
+    customerClient.getProfile().then((response) => {
+      if (response.status == 200) {
+        setProfile(response.data);
+      }
+    });
+  }, []);
+
   const selectedOption = options.find((f) =>
     pathname.includes(f.name.toLowerCase().replace(" ", "-"))
   );
@@ -111,26 +122,34 @@ export default function CustomerPage() {
     );
   };
   return (
-    <div className="vh-100 color-1 d-flex p-3">
-      <div
-        className="side-panel border rounded"
-        style={{ backgroundColor: "white" }}
-      >
-        <div className="d-flex flex-column justify-content-start">
-          {options.map((m) => {
-            return (
-              <Button
-                icon={m.icon}
-                className={`border rounded ${
-                  selectedOption.name == m.name ? "color-2" : "color-3"
-                }`}
-                onClick={() => handleSidePanelClick(m)}
-              >
-                <span className="ms-3">{m.name}</span>
-              </Button>
-            );
-          })}
-          {/* <ListBox
+    <div className="vh-100 color-1 d-flex flex-column">
+      <div className="d-flex p-3">
+        <div className="flex-fill">
+          <h4>
+            Welcome {profile.lastName}, {profile.firstName}
+          </h4>
+        </div>
+      </div>
+      <div className="d-flex p-3">
+        <div
+          className="side-panel border rounded"
+          style={{ backgroundColor: "white" }}
+        >
+          <div className="d-flex flex-column justify-content-start">
+            {options.map((m) => {
+              return (
+                <Button
+                  icon={m.icon}
+                  className={`border rounded ${
+                    selectedOption.name == m.name ? "color-2" : "color-3"
+                  }`}
+                  onClick={() => handleSidePanelClick(m)}
+                >
+                  <span className="ms-3">{m.name}</span>
+                </Button>
+              );
+            })}
+            {/* <ListBox
           value={selectedOption}
           onChange={(e) => {
             if (e.value) {
@@ -148,28 +167,31 @@ export default function CustomerPage() {
           className="flex-fill"
           itemTemplate={optionsTemplate}
         /> */}
+          </div>
         </div>
-      </div>
-      <div className="content d-flex flex-column ms-3">
-        <Routes>
-          <Route path="/" element={<Navigate to="home" />} />\
-          {options
-            .filter((f) => f.name.toLowerCase().replace(" ", "-") != "log-out")
-            .map((m) => {
-              // console.log(m.component);
-              return (
-                <Route
-                  path={"/" + m.name.toLowerCase().replace(" ", "-")}
-                  element={m.component}
-                ></Route>
-              );
-            })}
-        </Routes>
-      </div>
+        <div className="content d-flex flex-column ms-3">
+          <Routes>
+            <Route path="/" element={<Navigate to="home" />} />\
+            {options
+              .filter(
+                (f) => f.name.toLowerCase().replace(" ", "-") != "log-out"
+              )
+              .map((m) => {
+                // console.log(m.component);
+                return (
+                  <Route
+                    path={"/" + m.name.toLowerCase().replace(" ", "-")}
+                    element={m.component}
+                  ></Route>
+                );
+              })}
+          </Routes>
+        </div>
 
-      {/* <div className="ms-3 content d-flex flex-column">
+        {/* <div className="ms-3 content d-flex flex-column">
         {selectedOption.component}
       </div> */}
+      </div>
     </div>
   );
 }

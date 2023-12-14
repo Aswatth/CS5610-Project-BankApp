@@ -13,11 +13,17 @@ import EmployeeViewCustomers from "./view-customers/employee-view-customers";
 import EmployeeCardRequests from "./employee-card-requests/employee-card-requests";
 import EmployeeCreatedAppointments from "./employee-created-appointments/employee-created-appointments";
 import Cookies from "js-cookie";
+import * as employeeClient from "../clients/employee-client";
 
 export default function Employee({ employeeAccess }) {
   const { pathname } = useLocation();
   const navigate = useNavigate();
   const options = createOptions();
+
+  useEffect(() => {
+    // employeeClient.
+    // Display first name and last name
+  }, []);
 
   function createOptions() {
     let initialOptions = [

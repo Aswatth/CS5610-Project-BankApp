@@ -177,61 +177,18 @@ export default function CustomerHome() {
         </div> */}
       </div>
       <div className="flex-fill d-flex mt-1">
-        <div className="card-transactions-section me-1 d-flex flex-column">
-          <div className="flex-fill border rounded p-3 ">
-            <div className="d-flex">
-              <h4 className="flex-fill d-flex justify-content-start">
-                {selectedAccount ? selectedAccount.accountType + "-" : ""}{" "}
-                Account transactions:
-              </h4>
-              <Button
-                className="border rounded color-2"
-                label="View all"
-                onClick={(e) => {
-                  navigate("/customer/view-transactions");
-                }}
-              ></Button>
-            </div>
-            {selectedAccount ? (
-              <DataTable
-                value={
-                  selectedAccount
-                    ? transactionList
-                        .filter((f) => f.from == selectedAccount.number)
-                        .slice(0, 2)
-                    : null
-                }
-              >
-                <Column
-                  field="transactionType"
-                  header="Transaction type"
-                ></Column>
-                <Column field="to" header="Receiver account number"></Column>
-                <Column
-                  field="amount"
-                  header="Amount transferred"
-                  body={amountTransferredTemplate}
-                ></Column>
-              </DataTable>
-            ) : (
-              <div>Select an account to view recent transactions</div>
-            )}
-          </div>
-        </div>
-        <div className="expenses-balance-section ms-1 d-flex flex-column">
-          <div className="flex-fill border rounded p-3 ">
-            <h4>Accounts:</h4>
-            <DataTable
-              value={accountList}
-              selectionMode="single"
-              selection={selectedAccount}
-              onSelectionChange={(s) => setSelectedAccount(s.value)}
-            >
-              <Column field="accountType" header="Account type"></Column>
-              <Column field="accountNumber" header="Account number"></Column>
-              <Column field="accountBalance" header="Balance"></Column>
-            </DataTable>
-          </div>
+        <div className="flex-fill border rounded p-3 ">
+          <h4>Accounts:</h4>
+          <DataTable
+            value={accountList}
+            selectionMode="single"
+            selection={selectedAccount}
+            onSelectionChange={(s) => setSelectedAccount(s.value)}
+          >
+            <Column field="accountType" header="Account type"></Column>
+            <Column field="accountNumber" header="Account number"></Column>
+            <Column field="accountBalance" header="Balance"></Column>
+          </DataTable>
         </div>
       </div>
     </div>
