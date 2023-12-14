@@ -259,6 +259,13 @@ export default function Home() {
               navigate("/login");
             }}
           ></Button>
+          <Button
+            label="Where are we"
+            className="color-2 border rounded"
+            onClick={() => {
+              navigate("/branches");
+            }}
+          ></Button>
         </div>
         {/* <div className="login-element d-flex align-items-center p-3">
           <div className="flex-fill d-flex flex-column justify-content-evenly">
