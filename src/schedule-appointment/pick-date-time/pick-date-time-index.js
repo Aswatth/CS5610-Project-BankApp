@@ -203,6 +203,7 @@ export default function PickDateTime() {
             <Column field="date" header="Date"></Column>
             <Column field="startTime" header="Start time"></Column>
             <Column field="endTime" header="End time"></Column>
+            <Column field="employeeName" header="Employee"></Column>
           </DataTable>
 
           <label htmlFor="purpose">Purpose:</label>
