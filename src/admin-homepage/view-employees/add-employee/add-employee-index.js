@@ -15,7 +15,7 @@ import * as employeeAccessReducer from "../../../reducers/employee-access-reduce
 export default function AddEmployee() {
   const dispatch = useDispatch();
 
-  const roles = ["employee", "Manager"];
+  const roles = ["employee"];
   const [selectedRole, upadateSelectedRole] = useState(null);
 
   const [branches, setBranches] = useState([]);
