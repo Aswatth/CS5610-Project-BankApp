@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import * as customerClient from "../../clients/customer-client";
 import { useNavigate } from "react-router";
 import { Tag } from "primereact/tag";
-import { Toast } from "bootstrap";
+import { Toast } from "primereact/toast";
 
 export default function CustomerTransactions() {
   const toast = useRef(null);
