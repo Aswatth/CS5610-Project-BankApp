@@ -53,24 +53,32 @@ export default function AdminAccessPage() {
 
   const updateAccess = (accessName, accessStatus) => {
     if (selectedEmployee.accessList.length == 0) {
-      console.log("here");
       updateSelectedEmployee({
         ...selectedEmployee,
         accessList: [{ accessName: accessName, accessGiven: accessStatus }],
       });
     } else {
-      console.log("here2");
-      const updatedAccess = selectedEmployee.accessList.map((item) =>
-        item.accessName == accessName
-          ? { ...item, accessGiven: accessStatus }
-          : item
-      );
+      if (selectedEmployee.accessList.find((f) => f.accessName == accessName)) {
+        const updatedAccess = selectedEmployee.accessList.map((item) =>
+          item.accessName == accessName
+            ? { ...item, accessGiven: accessStatus }
+            : item
+        );
+
+        updateSelectedEmployee({
+          ...selectedEmployee,
+          accessList: updatedAccess,
+        });
+      } else {
+        let newAccess = { accessName: accessName, accessGiven: accessStatus };
+
+        updateSelectedEmployee({
+          ...selectedEmployee,
+          accessList: [...selectedEmployee.accessList, newAccess],
+        });
+      }
 
       // console.log({ ...selectedEmployee, accessList: updatedAccess });
-      updateSelectedEmployee({
-        ...selectedEmployee,
-        accessList: updatedAccess,
-      });
     }
   };
 
