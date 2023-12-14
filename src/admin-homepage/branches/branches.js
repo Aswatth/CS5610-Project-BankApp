@@ -24,7 +24,7 @@ export default function Branches() {
 
   useEffect(() => {
     getBranches().then((resposne) => {
-      if (resposne == null || resposne.status == 401) {
+      if (resposne.status == 401) {
         navigate("/login");
         return;
       }
