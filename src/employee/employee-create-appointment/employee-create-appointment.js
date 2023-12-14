@@ -74,6 +74,8 @@ export default function EmployeeCreateAppointment() {
     appointmentList.map((m) => {
       employeeClient.createNewAppointment(m);
     });
+
+    navigate(0);
   }
 
   return (

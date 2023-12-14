@@ -46,32 +46,57 @@ export default function CustomerProfile() {
   return (
     <div className="d-flex flex-column">
       <Toast ref={toast} />
-      <Button
-        icon={disabled ? "pi pi-pencil" : "pi pi-save"}
-        onClick={() => {
-          if (!disabled) {
-            customerClient.updateProfile(customerData);
+      <div className="d-flex mb-2">
+        <div className="flex-fill d-flex justify-content-start">
+          <h3>Profile</h3>
+        </div>
+        <div className="flex-fill d-flex justify-content-end">
+          <Button
+            icon={disabled ? "pi pi-pencil" : "pi pi-save"}
+            className="color-2 border rounded"
+            onClick={() => {
+              if (!disabled) {
+                customerClient
+                  .updateProfile(customerData)
+                  .then((response) => {
+                    if (response.status == 200 || response.status == 201) {
+                      navigate(0);
+                    }
+                  })
+                  .catch((response) => {
+                    toast.current.show({
+                      severity: "error",
+                      summary: "Error",
+                      detail: `${response.response.data.error}`,
+                      life: 3000,
+                    });
+                  });
+              }
+              setDisabled(false);
+            }}
+          ></Button>
+        </div>
+      </div>
+      <div className="d-flex">
+        <label htmlFor="name">Name</label>
+        <InputText
+          className="flex-fill"
+          value={customerData.firstName}
+          disabled={disabled}
+          onChange={(c) =>
+            setCustomerData({ ...customerData, firstName: c.target.value })
           }
-          setDisabled(false);
-        }}
-      ></Button>
-      <label htmlFor="firstName">First name:</label>
-      <InputText
-        value={customerData.firstName}
-        disabled={disabled}
-        onChange={(c) =>
-          setCustomerData({ ...customerData, firstName: c.target.value })
-        }
-      ></InputText>
-      <label htmlFor="lastName">Last name:</label>
-      <InputText
-        value={customerData.lastName}
-        disabled={disabled}
-        onChange={(c) =>
-          setCustomerData({ ...customerData, lastName: c.target.value })
-        }
-      ></InputText>
-      <label htmlFor="lastName">Date of birth:</label>
+        ></InputText>
+        <InputText
+          className="flex-fill"
+          value={customerData.lastName}
+          disabled={disabled}
+          onChange={(c) =>
+            setCustomerData({ ...customerData, lastName: c.target.value })
+          }
+        ></InputText>
+      </div>
+      <label htmlFor="dob">Date of birth:</label>
       <Calendar
         value={new Date(customerData.dateOfBirth)}
         disabled={disabled}
