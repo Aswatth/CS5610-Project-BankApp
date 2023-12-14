@@ -2,7 +2,7 @@ import React, { useRef, useState } from "react";
 import logo from "../logo.svg";
 import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
-import "./login-index.css";
+// import "./login-index.css";
 import { Link, useNavigate } from "react-router-dom";
 import * as adminClient from "../clients/admin-client";
 import * as customerClient from "../clients/customer-client";
@@ -11,7 +11,7 @@ import { jwtDecode } from "jwt-decode";
 import Cookies from "js-cookie";
 import { Toast } from "primereact/toast";
 
-export default function Login() {
+export default function Home() {
   const toast = useRef(null);
   const navigate = useNavigate();
   const [credential, setCredential] = useState({ username: "", password: "" });
@@ -251,7 +251,16 @@ export default function Login() {
           <img src={logo} alt="logo" width={100} className="m-0 p-0" />
           <h3 className="ps-4">The Mock Bank</h3>
         </div>
-        <div className="login-element d-flex align-items-center p-3">
+        <div className="d-flex justify-content-center">
+          <Button
+            label="Get started"
+            className="color-2 border rounded"
+            onClick={() => {
+              navigate("/login");
+            }}
+          ></Button>
+        </div>
+        {/* <div className="login-element d-flex align-items-center p-3">
           <div className="flex-fill d-flex flex-column justify-content-evenly">
             <label htmlFor="username">Username</label>
             <InputText
@@ -291,6 +300,19 @@ export default function Login() {
               ></Button>
             </div>
           </div>
+        </div> */}
+        <div className="fw-light fst-italic warning-message p-3">
+          We are thrilled to welcome you to the digital doorstep of Mock Bank.
+          Your trusted financial partner committed to making banking convenient,
+          secure, and tailored to your needs. With our Online Banking platform,
+          you have the power to manage your finances anytime, anywhere. Whether
+          you're checking account balances, transferring funds, paying bills, or
+          exploring our range of services, we've designed a seamless experience
+          with your comfort in mind. Our top-notch security measures ensure that
+          your financial information is protected, giving you peace of mind as
+          you navigate the world of digital banking. Thank you for choosing Mock
+          Bank. We are here to assist you on your financial journey and look
+          forward to serving you with excellence.
         </div>
       </div>
       <div className="brand-info d-none d-lg-block">

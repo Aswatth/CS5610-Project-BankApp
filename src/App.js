@@ -12,6 +12,7 @@ import store from "./store/index";
 import { HashRouter } from "react-router-dom";
 import CustomerPage from "./customer/customer-index";
 import Employee from "./employee/employee.index";
+import Home from "./home/home";
 
 function App() {
   return (
@@ -19,7 +20,8 @@ function App() {
       <HashRouter>
         <div>
           <Routes>
-            <Route path="/" element={<Navigate to="/login" />} />
+            <Route path="/" element={<Navigate to="/home" />} />
+            <Route path="/home" element={<Home />}></Route>
             <Route path="/login" element={<Login />}></Route>
             <Route
               path="/book-appointment"
