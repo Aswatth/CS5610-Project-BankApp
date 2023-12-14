@@ -199,12 +199,7 @@ export default function EmployeeViewAppointments({ hasCreateCusomterAccess }) {
         {createCustomerUI()}
       </Dialog>
       <DataTable
-        value={
-          appointmentsToDisplay.filter((f) => f.customer.customerId != 0)
-            .length == 0
-            ? []
-            : appointmentsToDisplay.filter((f) => f.customer.customerId != 0)
-        }
+        value={appointmentsToDisplay.filter((f) => f.customer.customerId != 0)}
         scrollHeight="500px"
         selectionMode="single"
         selection={selectedAppointment}
